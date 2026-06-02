@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Diary v2</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f3f4f6; font-family: sans-serif; }
+    .profile-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; }
+    .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; justify-content: center; align-items: center; z-index: 9999; }
+  </style>
+</head>
+<body>
+
+  <div id="loading" class="loading-overlay">
+    <div class="spinner-border text-success" role="status"></div>
+  </div>
+
+  <div class="container py-4" style="max-width: 480px;">
+    <div class="card mb-3 shadow-sm border-0 rounded-3">
+      <div class="card-body d-flex align-items-center gap-3">
+        <img id="userPicture" class="profile-img" src="https://via.placeholder.com/70" alt="Profile">
+        <div>
+          <h6 class="mb-0 text-muted small">ผู้ใช้งาน LINE</h6>
+          <h5 id="userName" class="mb-0 fw-bold">-</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3">
+      <div class="card-body">
+        <h4 class="card-title fw-bold text-center text-success mb-4">วันนี้กินอะไรมานะ? 🍳</h4>
+        <form id="foodForm">
+          <div class="mb-3">
+            <label class="form-label fw-bold text-secondary">เมนูที่กินวันนี้</label>
+            <input type="text" class="form-control form-control-lg" id="foodMenu" placeholder="เช่น ข้าวผัดปู" required>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-bold text-secondary">รีวิวรสชาติ</label>
+            <textarea class="form-control form-control-lg" id="tastyReview" rows="3" placeholder="เช่น อร่อยมาก" required></textarea>
+          </div>
+          <button type="submit" id="btnSubmit" class="btn btn-success btn-lg w-100 fw-bold">บันทึกข้อมูลข้อมูล</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://static.line-scdn.net/liff/edge/versions/2.23.0/sdk.js"></script>
+  <script>
+    let lineProfile = { userId: '', displayName: '' };
+    
+    // 🔴 จุดสำคัญ 1: ใส่ URL Web App จาก Apps Script (ขั้นตอนที่ 4)
+    const WEB_APP_URL = "YOUR_WEB_APP_URL"; 
+
+    window.onload = function() {
+      // 🔴 จุดสำคัญ 2: ใส่ LIFF ID จาก LINE Developer
+      liff.init({ liffId: "YOUR_LIFF-ID" }, () => {
+        if (liff.isLoggedIn()) {
+          liff.getProfile().then(profile => {
+            lineProfile.userId = profile.userId;
+            lineProfile.displayName = profile.displayName;
+            document.getElementById("userPicture").src = profile.pictureUrl || "";
+            document.getElementById("userName").innerText = profile.displayName;
+            document.getElementById("loading").style.display = 'none';
+          });
+        } else {
+          liff.login();
+        }
+      }, err => console.error(err));
+    };
+
+    document.getElementById("foodForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const btnSubmit = document.getElementById("btnSubmit");
+      btnSubmit.disabled = true;
+      btnSubmit.innerText = "กำลังบันทึก...";
+
+      const payload = {
+        userId: lineProfile.userId,
+        displayName: lineProfile.displayName,
+        foodMenu: document.getElementById("foodMenu").value,
+        tastyReview: document.getElementById("tastyReview").value
+      };
+
+      fetch(WEB_APP_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(response => {
+        alert(response.message);
+        liff.closeWindow(); 
+      })
+      .catch(err => {
+        alert("เกิดข้อผิดพลาดในการบันทึก");
+        btnSubmit.disabled = false;
+        btnSubmit.innerText = "บันทึกข้อมูลข้อมูล";
+      });
+    });
+  </script>
+</body>
+</html>
