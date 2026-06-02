@@ -51,11 +51,11 @@
     let lineProfile = { userId: '', displayName: '' };
     
     // 🔴 จุดสำคัญ 1: ใส่ URL Web App จาก Apps Script (ขั้นตอนที่ 4)
-    const WEB_APP_URL = "YOUR_WEB_APP_URL"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxsArPQ3v4HSWa2Rz5PQL17jqo526SEAq3GJzoN4vTUyzHWOqTCzxb7-dJzYjwxIgb1Tg/exec"; 
 
     window.onload = function() {
       // 🔴 จุดสำคัญ 2: ใส่ LIFF ID จาก LINE Developer
-      liff.init({ liffId: "YOUR_LIFF-ID" }, () => {
+      liff.init({ liffId: "2010272973-6qo1suX2" }, () => {
         if (liff.isLoggedIn()) {
           liff.getProfile().then(profile => {
             lineProfile.userId = profile.userId;
