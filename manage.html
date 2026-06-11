@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -58,6 +58,31 @@
     .message { padding: 12px; border-radius: 10px; border: 1px solid var(--line); color: var(--muted); background: var(--panel); }
     .message.error { border-color: rgba(220,38,38,.45); color: #fecaca; }
     .hidden { display: none !important; }
+    .sticky-actions {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 50;
+      padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(7, 17, 31, .94);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      display: none;
+    }
+    .sticky-actions.show { display: block; }
+    .sticky-inner { max-width: 960px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+    .sticky-count { color: var(--text); font-weight: 700; }
+    .sticky-count small { display: block; color: var(--muted); font-weight: 500; }
+    .confirm-backdrop { position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.72); display: none; align-items: center; justify-content: center; padding: 16px; }
+    .confirm-backdrop.show { display: flex; }
+    .confirm-modal { width: min(520px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+    .summary-list { display: grid; gap: 8px; margin: 12px 0; }
+    .summary-row { display: grid; grid-template-columns: 120px 1fr; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: #08111f; }
+    .summary-row span:first-child { color: var(--muted); }
+    .selected-count-chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 999px; background: rgba(37,99,235,.16); color: #bfdbfe; border: 1px solid rgba(37,99,235,.35); font-size: 13px; font-weight: 700; }
+    @media (min-width: 761px) { .sticky-actions { display: none !important; } }
+    @media (max-width: 760px) { body { padding-bottom: 86px; } th.optional, td.optional { display: none; } .btn { width: 100%; } .actions { width: 100%; } .summary-row { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -109,7 +134,8 @@
           <textarea id="reasonDetailInput" placeholder="ระบุรายละเอียดเพิ่มเติม"></textarea>
         </div>
         <div class="actions" style="margin-top:12px">
-          <button class="btn" id="saveBtn"><i class="fas fa-floppy-disk"></i>บันทึกเข้า processing</button>
+          <span class="selected-count-chip" id="selectedCountChip"><i class="fas fa-list-check"></i>เลือก 0 หมายจับ</span>
+          <button class="btn" id="saveBtn"><i class="fas fa-clipboard-check"></i>ตรวจสอบก่อนบันทึก</button>
         </div>
       </div>
     </section>
@@ -126,6 +152,25 @@
     </section>
   </div>
 
+
+  <div class="sticky-actions" id="stickyActions">
+    <div class="sticky-inner">
+      <div class="sticky-count"><span id="stickyCount">เลือก 0 หมายจับ</span><small>สถานะใหม่: สิ้นผลรอเพิกถอน</small></div>
+      <button class="btn" id="stickySaveBtn"><i class="fas fa-clipboard-check"></i>ตรวจสอบ</button>
+    </div>
+  </div>
+
+  <div class="confirm-backdrop" id="confirmBackdrop">
+    <div class="confirm-modal">
+      <h3>ตรวจสอบก่อนบันทึก</h3>
+      <div class="muted">รายการนี้จะถูกบันทึกเข้า processing และ sync สถานะไปยังฐานหมายจับ</div>
+      <div class="summary-list" id="confirmSummary"></div>
+      <div class="actions">
+        <button class="btn" id="confirmSaveBtn"><i class="fas fa-floppy-disk"></i>ยืนยันบันทึก</button>
+        <button class="btn secondary" id="cancelConfirmBtn"><i class="fas fa-xmark"></i>ยกเลิก</button>
+      </div>
+    </div>
+  </div>
   <script src="https://static.line-scdn.net/liff/edge/versions/2.23.0/sdk.js"></script>
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbyss_zHh0OcITnBgf86OQCL_TMBbWLuyYkQpI2gyQIzXPYOlW0VLOo5O1i2gs2RC13a/exec";
@@ -228,8 +273,47 @@
       document.getElementById("processForm").classList.remove("hidden");
     }
 
+
+    function getSelectedWarrants() {
+      return Array.from(document.querySelectorAll(".warrantCheck:checked")).map(el => searchResults[Number(el.value)]);
+    }
+
+    function updateSelectedUi() {
+      const count = getSelectedWarrants().length;
+      document.getElementById("selectedCountChip").innerHTML = `<i class="fas fa-list-check"></i>เลือก ${count} หมายจับ`;
+      document.getElementById("stickyCount").innerText = `เลือก ${count} หมายจับ`;
+      document.getElementById("stickyActions").classList.toggle("show", count > 0);
+    }
+
+    function openConfirm() {
+      const selected = getSelectedWarrants();
+      if (!selected.length) {
+        setMessage("searchMessage", "กรุณาเลือกหมายจับที่อยู่สถานะต้องการตัวอย่างน้อย 1 รายการ", true);
+        return;
+      }
+      const reason = document.getElementById("reasonSelect").value;
+      const reasonDetail = document.getElementById("reasonDetailInput").value.trim();
+      const submitTo = document.getElementById("submitToInput").value.trim() || "-";
+      if (reason === "อื่น ๆ" && !reasonDetail) {
+        setMessage("searchMessage", "กรุณาระบุรายละเอียดเหตุ", true);
+        return;
+      }
+      const warrantList = selected.map(w => escapeHtml(w.warrantNo)).join(", ");
+      document.getElementById("confirmSummary").innerHTML = `
+        <div class="summary-row"><span>จำนวนหมายจับ</span><strong>${selected.length} รายการ</strong></div>
+        <div class="summary-row"><span>เลขที่หมายจับ</span><strong>${warrantList}</strong></div>
+        <div class="summary-row"><span>เหตุ</span><strong>${escapeHtml(reason)}${reasonDetail ? " - " + escapeHtml(reasonDetail) : ""}</strong></div>
+        <div class="summary-row"><span>เสนอท่าน</span><strong>${escapeHtml(submitTo)}</strong></div>
+        <div class="summary-row"><span>สถานะใหม่</span><strong>${statusBadge(STATUS_PENDING)}</strong></div>
+      `;
+      document.getElementById("confirmBackdrop").classList.add("show");
+    }
+
+    function closeConfirm() {
+      document.getElementById("confirmBackdrop").classList.remove("show");
+    }
     async function saveProcess() {
-      const selected = Array.from(document.querySelectorAll(".warrantCheck:checked")).map(el => searchResults[Number(el.value)]);
+      const selected = getSelectedWarrants();
       if (!selected.length) {
         setMessage("searchMessage", "กรุณาเลือกหมายจับที่อยู่สถานะต้องการตัวอย่างน้อย 1 รายการ", true);
         return;
@@ -242,20 +326,21 @@
         return;
       }
       try {
-        document.getElementById("saveBtn").disabled = true;
+        document.getElementById("confirmSaveBtn").disabled = true;
         const result = await callGas("addProcess", {
           selectedWarrants: selected.map(w => ({ warrantNo: w.warrantNo })),
           reason,
           reasonDetail,
           submitTo
         });
+        closeConfirm();
         setMessage("searchMessage", `บันทึกสำเร็จ ${result.added || selected.length} รายการ`);
         clearForm(false);
         await loadPending();
       } catch (err) {
         setMessage("searchMessage", err.message, true);
       } finally {
-        document.getElementById("saveBtn").disabled = false;
+        document.getElementById("confirmSaveBtn").disabled = false;
       }
     }
 
@@ -317,11 +402,15 @@
       document.getElementById("submitToInput").value = "";
       document.getElementById("reasonDetailInput").value = "";
       searchResults = [];
+      document.getElementById("stickyActions").classList.remove("show");
     }
 
     document.getElementById("searchBtn").addEventListener("click", searchWarrants);
     document.getElementById("clearBtn").addEventListener("click", () => { clearForm(true); setMessage("searchMessage", ""); });
-    document.getElementById("saveBtn").addEventListener("click", saveProcess);
+    document.getElementById("saveBtn").addEventListener("click", openConfirm);
+    document.getElementById("stickySaveBtn").addEventListener("click", openConfirm);
+    document.getElementById("confirmSaveBtn").addEventListener("click", saveProcess);
+    document.getElementById("cancelConfirmBtn").addEventListener("click", closeConfirm);
     document.getElementById("reloadBtn").addEventListener("click", loadPending);
     document.getElementById("syncBtn").addEventListener("click", syncNow);
     document.getElementById("id13Input").addEventListener("keydown", e => { if (e.key === "Enter") searchWarrants(); });
@@ -342,3 +431,5 @@
   </script>
 </body>
 </html>
+
+
