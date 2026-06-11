@@ -57,6 +57,10 @@
     .sync-error { background: rgba(220,38,38,.15); color: #fecaca; border-color: rgba(220,38,38,.35); }
     .message { padding: 12px; border-radius: 10px; border: 1px solid var(--line); color: var(--muted); background: var(--panel); }
     .message.error { border-color: rgba(220,38,38,.45); color: #fecaca; }
+    .add-entry-btn { width: 100%; margin-top: 14px; border: 1px dashed rgba(148,163,184,.45); border-radius: 14px; padding: 14px; background: rgba(37,99,235,.1); color: #bfdbfe; font: inherit; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .add-entry-btn span { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); color: white; display: inline-grid; place-items: center; }
+    .add-panel { scroll-margin-top: 12px; }
+    .icon-btn { width: 42px; height: 42px; padding: 0; flex: 0 0 auto; }
     .hidden { display: none !important; }
     .sticky-actions {
       position: fixed;
@@ -99,7 +103,25 @@
     </section>
 
     <section class="panel">
-      <h2>เพิ่มรายการดำเนินการ</h2>
+      <div class="topbar" style="padding:0; background:transparent; border:0">
+        <h2>รายการใน processing</h2>
+        <div class="actions">
+          <button class="btn secondary" id="syncBtn"><i class="fas fa-arrows-rotate"></i>Sync ตอนนี้</button>
+          <button class="btn secondary" id="reloadBtn"><i class="fas fa-rotate"></i>โหลดใหม่</button>
+        </div>
+      </div>
+      <div id="pendingList" class="message">กำลังโหลด...</div>
+      <button class="add-entry-btn" id="openAddBtn" type="button">
+        <span><i class="fas fa-plus"></i></span>
+        เพิ่มรายการดำเนินการ
+      </button>
+    </section>
+
+    <section class="panel add-panel hidden" id="addPanel">
+      <div class="topbar" style="padding:0; background:transparent; border:0; margin-bottom:12px">
+        <h2>เพิ่มรายการดำเนินการ</h2>
+        <button class="btn secondary icon-btn" id="closeAddBtn" type="button" aria-label="ปิดฟอร์มเพิ่มรายการ"><i class="fas fa-xmark"></i></button>
+      </div>
       <div class="grid two">
         <div>
           <label for="id13Input">เลขบัตรประชาชน 13 หลัก</label>
@@ -138,17 +160,6 @@
           <button class="btn" id="saveBtn"><i class="fas fa-clipboard-check"></i>ตรวจสอบก่อนบันทึก</button>
         </div>
       </div>
-    </section>
-
-    <section class="panel">
-      <div class="topbar" style="padding:0; background:transparent; border:0">
-        <h2>รายการใน processing</h2>
-        <div class="actions">
-          <button class="btn secondary" id="syncBtn"><i class="fas fa-arrows-rotate"></i>Sync ตอนนี้</button>
-          <button class="btn secondary" id="reloadBtn"><i class="fas fa-rotate"></i>โหลดใหม่</button>
-        </div>
-      </div>
-      <div id="pendingList" class="message">กำลังโหลด...</div>
     </section>
   </div>
 
@@ -236,6 +247,23 @@
       return result;
     }
 
+
+    function openAddPanel() {
+      const panel = document.getElementById("addPanel");
+      panel.classList.remove("hidden");
+      document.getElementById("openAddBtn").classList.add("hidden");
+      setTimeout(() => {
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("id13Input").focus();
+      }, 50);
+    }
+
+    function closeAddPanel() {
+      clearForm(true);
+      setMessage("searchMessage", "");
+      document.getElementById("addPanel").classList.add("hidden");
+      document.getElementById("openAddBtn").classList.remove("hidden");
+    }
     async function searchWarrants() {
       const id13 = document.getElementById("id13Input").value.trim();
       if (!/^\d{13}$/.test(id13)) {
@@ -405,6 +433,8 @@
       document.getElementById("stickyActions").classList.remove("show");
     }
 
+    document.getElementById("openAddBtn").addEventListener("click", openAddPanel);
+    document.getElementById("closeAddBtn").addEventListener("click", closeAddPanel);
     document.getElementById("searchBtn").addEventListener("click", searchWarrants);
     document.getElementById("clearBtn").addEventListener("click", () => { clearForm(true); setMessage("searchMessage", ""); });
     document.getElementById("saveBtn").addEventListener("click", openConfirm);
@@ -431,5 +461,8 @@
   </script>
 </body>
 </html>
+
+
+
 
 
