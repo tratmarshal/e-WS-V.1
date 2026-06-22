@@ -1197,12 +1197,6 @@
   let lastFailedRequest = null;
 
   // -------------------------------------------------------------
-  // Client Cache (localStorage + 30s TTL for dashboard)
-  // -------------------------------------------------------------
-  function cacheGet(key) { try { var raw = localStorage.getItem('wtm_' + key); if (!raw) return null; var obj = JSON.parse(raw); return Date.now() < obj.exp ? obj.data : null; } catch(e) { return null; } }
-  function cacheSet(key, data, ttl) { try { localStorage.setItem('wtm_' + key, JSON.stringify({ data: data, exp: Date.now() + (ttl || 30000) })); } catch(e) {} }
-
-  // -------------------------------------------------------------
   // Initialization
   // -------------------------------------------------------------
   window.onload = function() { initializeLiff(); };
@@ -1284,7 +1278,7 @@
   }
 
   // -------------------------------------------------------------
-  // Data (with client cache)
+  // Data (no client cache)
   // -------------------------------------------------------------
   async function fetchDataFromGAS() {
     try {
@@ -1302,20 +1296,9 @@
         </tr>
       `).join('');
 
-      // Check client cache
-      const cached = cacheGet('pending_' + currentTab);
-      if (cached) {
-        masterItems = cached;
-        renderDashboard();
-        // Still refresh in background
-        setTimeout(() => refreshDataFromGAS(), 10);
-        return;
-      }
-
       lastFailedRequest = { fn: fetchDataFromGAS, args: [] };
       const response = await callGas("getPending", {});
       masterItems = response.data || [];
-      cacheSet('pending_' + currentTab, masterItems);
       renderDashboard();
       lastFailedRequest = null;
       if (masterItems.some(item => item.syncStatus === "pending")) triggerBackgroundSync();
@@ -1325,17 +1308,6 @@
       if (msg === "Failed to fetch") msg = "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้";
       showErrorModal(msg, () => fetchDataFromGAS());
     }
-  }
-
-  // Background refresh (bypass cache)
-  async function refreshDataFromGAS() {
-    try {
-      const response = await callGas("getPending", {});
-      masterItems = response.data || [];
-      cacheSet('pending_' + currentTab, masterItems);
-      renderDashboard();
-      if (masterItems.some(item => item.syncStatus === "pending")) triggerBackgroundSync();
-    } catch(e) { console.log("Background refresh failed", e); }
   }
 
   // -------------------------------------------------------------
