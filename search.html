@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -25,11 +25,7 @@
       --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'IBM Plex Sans Thai', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -61,91 +57,39 @@
       border-radius: var(--radius-lg);
       padding: 40px;
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-      position: relative;
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 32px;
-    }
+    .header { text-align: center; margin-bottom: 32px; }
 
     .system-title {
-      font-size: 32px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      color: #ffffff;
-      text-transform: uppercase;
+      font-size: 32px; font-weight: 800; letter-spacing: 2px;
+      color: #ffffff; text-transform: uppercase;
     }
 
     .system-subtitle {
-      margin-top: 6px;
-      color: var(--text-dark);
-      font-size: 13px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 600;
+      margin-top: 6px; color: var(--text-dark); font-size: 13px;
+      letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
     }
 
-    /* Profile Section - User Bar */
     .user-bar {
-      height: 56px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--surface-bg);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 0 16px;
-      margin-bottom: 24px;
+      height: 56px; display: flex; align-items: center; gap: 12px;
+      background: var(--surface-bg); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 0 16px; margin-bottom: 24px;
     }
 
     .profile-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      font-size: 14px;
-      overflow: hidden;
+      width: 32px; height: 32px; border-radius: 50%; background: var(--border-color);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); font-size: 14px; overflow: hidden;
     }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .user-bar span { color: var(--text-main); font-size: 14px; font-weight: 600; flex: 1; }
 
-    .profile-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .user-bar span {
-      color: var(--text-main);
-      font-size: 14px;
-      font-weight: 600;
-      flex: 1;
-    }
-
-    .online-indicator {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .online-text {
-      font-size: 11px;
-      font-weight: 700;
-      color: #10b981;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
+    .online-indicator { display: flex; align-items: center; gap: 8px; }
+    .online-text { font-size: 11px; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 0.5px; }
     .online-dot {
-      width: 8px;
-      height: 8px;
-      background-color: #10b981;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #10b981;
-      animation: pulseGreen 2s infinite;
+      width: 8px; height: 8px; background-color: #10b981; border-radius: 50%;
+      box-shadow: 0 0 8px #10b981; animation: pulseGreen 2s infinite;
     }
 
     @keyframes pulseGreen {
@@ -154,298 +98,105 @@
       100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
-    /* Segmented Control (Toggle) */
     .search-type-toggle {
-      display: flex;
-      background: var(--surface-bg);
-      padding: 4px;
-      border-radius: 12px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border-color);
+      display: flex; background: var(--surface-bg); padding: 4px;
+      border-radius: 12px; margin-bottom: 24px; border: 1px solid var(--border-color);
     }
 
     .toggle-btn {
-      flex: 1;
-      padding: 12px 8px;
-      border: none;
-      background: transparent;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      flex: 1; padding: 12px 8px; border: none; background: transparent;
+      border-radius: 10px; font-size: 14px; font-weight: 600;
+      color: var(--text-muted); cursor: pointer; transition: var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
+    .toggle-btn.active { background: var(--primary-color); color: #ffffff; }
 
-    .toggle-btn.active {
-      background: var(--primary-color);
-      color: #ffffff;
-    }
-
-    /* Inputs */
-    .input-group {
-      margin-bottom: 24px;
-    }
+    .input-group { margin-bottom: 24px; }
 
     .input-group input {
-      width: 100%;
-      height: 60px;
-      padding: 0 20px;
-      font-size: 18px;
-      border: 1px solid #334155;
-      border-radius: var(--radius-md);
-      background: #0b1220;
-      color: #ffffff;
-      transition: var(--transition);
-      font-family: inherit;
+      width: 100%; height: 60px; padding: 0 20px; font-size: 18px;
+      border: 1px solid #334155; border-radius: var(--radius-md);
+      background: #0b1220; color: #ffffff; transition: var(--transition); font-family: inherit;
     }
+    .input-group input:focus { outline: none; border-color: #3b82f6; }
+    .input-group input::placeholder { color: #475569; }
 
-    .input-group input:focus {
-      outline: none;
-      border-color: #3b82f6;
-    }
-
-    .input-group input::placeholder {
-      color: #475569;
-    }
-
-    /* Buttons */
-    .button-group {
-      margin-bottom: 24px;
-    }
+    .button-group { margin-bottom: 24px; }
 
     .search-btn {
-      width: 100%;
-      height: 56px;
-      background: var(--primary-color);
-      color: #ffffff;
-      font-weight: 700;
-      border: none;
-      border-radius: var(--radius-md);
-      font-size: 16px;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      letter-spacing: 0.5px;
+      width: 100%; height: 56px; background: var(--primary-color);
+      color: #ffffff; font-weight: 700; border: none; border-radius: var(--radius-md);
+      font-size: 16px; cursor: pointer; transition: var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 0.5px;
     }
+    .search-btn:hover { background: #1d4ed8; }
+    .search-btn:active { transform: scale(0.99); }
 
-    .search-btn:hover {
-      background: #1d4ed8;
-    }
+    .result-section { min-height: 0; animation: fadeIn 0.3s ease-in; }
 
-    .search-btn:active {
-      transform: scale(0.99);
-    }
-
-    /* Results */
-    .result-section {
-      min-height: 0px;
-      animation: fadeIn 0.3s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     .result-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 13px; font-weight: 700; color: var(--text-muted);
+      margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;
+      display: flex; align-items: center; gap: 8px;
     }
+    .result-title i { color: var(--primary-color); }
 
-    .result-title i {
-      color: var(--primary-color);
-    }
-
-    /* Table Intelligence UI */
     .table-container {
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      overflow: hidden;
-      background: var(--card-bg);
+      border-radius: 12px; border: 1px solid var(--border-color);
+      overflow: hidden; background: var(--card-bg);
     }
 
-    .result-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
+    .result-table { width: 100%; border-collapse: collapse; text-align: left; }
     .result-table th {
-      padding: 14px 16px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-muted);
-      background: var(--surface-bg);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 1px solid var(--border-color);
+      padding: 14px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted);
+      background: var(--surface-bg); text-transform: uppercase;
+      letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color);
     }
-
     .result-table td {
-      padding: 16px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-main);
-      border-bottom: 1px solid var(--border-color);
+      padding: 16px; font-size: 14px; font-weight: 500;
+      color: var(--text-main); border-bottom: 1px solid var(--border-color);
     }
+    .result-table tbody tr { transition: background 0.15s; }
+    .result-table tbody tr:hover { background-color: var(--surface-bg); }
+    .result-table tbody tr:last-child td { border-bottom: none; }
 
-    .result-table tbody tr {
-      transition: background 0.15s;
-    }
-
-    .result-table tbody tr:hover {
-      background-color: var(--surface-bg);
-    }
-
-    .result-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    /* Custom Military Status Badges */
     .badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 4px 12px; border-radius: 999px; font-size: 12px;
+      font-weight: 700; letter-spacing: 0.5px;
     }
+    .badge.danger { background: #450a0a; color: #fca5a5; border: 1px solid #7f1d1d; }
+    .badge.success { background: #052e16; color: #86efac; border: 1px solid #064e3b; }
+    .badge.warning { background: #422006; color: #fde68a; border: 1px solid #854d0e; }
+    .badge.neutral { background: var(--surface-bg); color: var(--text-muted); border: 1px solid var(--border-color); }
 
-    .badge.danger {
-      background: #450a0a;
-      color: #fca5a5;
-      border: 1px solid #7f1d1d;
-    }
-
-    .badge.success {
-      background: #052e16;
-      color: #86efac;
-      border: 1px solid #064e3b;
-    }
-
-    .badge.warning {
-      background: #422006;
-      color: #fde68a;
-      border: 1px solid #854d0e;
-    }
-
-    .badge.neutral {
-      background: var(--surface-bg);
-      color: var(--text-muted);
-      border: 1px solid var(--border-color);
-    }
-
-    /* Terminal Status Boxes */
     .info-box, .error-box, .success-box {
-      padding: 16px 20px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      line-height: 1.5;
+      padding: 16px 20px; border-radius: 12px; font-size: 14px;
+      font-weight: 500; display: flex; align-items: center; gap: 12px; line-height: 1.5;
     }
+    .info-box { background: var(--surface-bg); color: var(--text-muted); border: 1px solid var(--border-color); }
+    .error-box { background: #1c1917; color: #f87171; border: 1px solid #7f1d1d; }
+    .success-box { background: #064e3b; color: #a7f3d0; border: 1px solid #047857; }
 
-    .info-box {
-      background: var(--surface-bg);
-      color: var(--text-muted);
-      border: 1px solid var(--border-color);
-    }
-
-    .error-box {
-      background: #1c1917;
-      color: #f87171;
-      border: 1px solid #7f1d1d;
-    }
-
-    .success-box {
-      background: #064e3b;
-      color: #a7f3d0;
-      border: 1px solid #047857;
-    }
-
-    /* Intel Loading Screen */
     .loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(5, 11, 20, 0.95);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      opacity: 0;
-      visibility: hidden;
-      transition: var(--transition);
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(5, 11, 20, 0.95); display: flex; justify-content: center;
+      align-items: center; z-index: 9999; opacity: 0; visibility: hidden; transition: var(--transition);
     }
-    
-    .loading-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
+    .loading-overlay.active { opacity: 1; visibility: visible; }
 
     .loading-content {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 40px;
-      text-align: center;
-      width: 320px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      background: var(--card-bg); border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg); padding: 40px; text-align: center;
+      width: 320px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
     }
+    .loading-title { font-size: 20px; font-weight: 800; letter-spacing: 2px; color: #ffffff; margin-bottom: 4px; text-transform: uppercase; }
+    .loading-subtitle { color: var(--text-dark); font-size: 13px; margin-bottom: 24px; font-weight: 600; letter-spacing: 0.5px; }
 
-    .loading-title {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      color: #ffffff;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    .loading-subtitle {
-      color: var(--text-dark);
-      font-size: 13px;
-      margin-bottom: 24px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-
-    .loading-bar-container {
-      width: 100%;
-      height: 4px;
-      background: #1e293b;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .loading-bar {
-      width: 50%;
-      height: 100%;
-      background: var(--primary-color);
-      border-radius: 999px;
-      animation: loadingSweep 1.5s infinite ease-in-out;
-    }
+    .loading-bar-container { width: 100%; height: 4px; background: #1e293b; border-radius: 999px; overflow: hidden; }
+    .loading-bar { width: 50%; height: 100%; background: var(--primary-color); border-radius: 999px; animation: loadingSweep 1.5s infinite ease-in-out; }
 
     @keyframes loadingSweep {
       0% { transform: translateX(-100%); }
@@ -453,11 +204,9 @@
       100% { transform: translateX(200%); }
     }
 
-    /* Mobile Responsive */
     @media (max-width: 600px) {
       .system-card { padding: 24px; }
       .system-title { font-size: 26px; }
-      .user-bar { flex-direction: row; text-align: left; }
       .input-group input { height: 54px; font-size: 16px; }
       .search-btn { height: 50px; font-size: 15px; }
       .result-table th, .result-table td { padding: 12px 10px; font-size: 13px; }
@@ -471,6 +220,7 @@
     .meta-grid { display: grid; gap: 8px; }
     .meta-row { display: grid; grid-template-columns: 88px 1fr; gap: 8px; font-size: 13px; line-height: 1.45; }
     .meta-row span:first-child { color: var(--text-muted); }
+
     @media (max-width: 600px) {
       body { justify-content: flex-start; }
       .system-card { padding: 20px; }
@@ -480,25 +230,16 @@
     }
     .hidden { display: none !important; }
 
-    /* Tactical Debug Card */
-    .debug-card {
-      background: #111827;
-      border-radius: 12px;
-      padding: 24px;
-      border: 1px solid #ef4444;
-    }
+    .debug-card { background: #111827; border-radius: 12px; padding: 24px; border: 1px solid #ef4444; }
   </style>
 </head>
 <body>
 
-<!-- High-Tech Intelligence Loading State -->
 <div id="loadingOverlay" class="loading-overlay active">
   <div class="loading-content">
     <div class="loading-title">WARRANT TRACKER</div>
     <div class="loading-subtitle" id="loadingText">SYNCHRONIZING DATABASE</div>
-    <div class="loading-bar-container">
-      <div class="loading-bar"></div>
-    </div>
+    <div class="loading-bar-container"><div class="loading-bar"></div></div>
   </div>
 </div>
 
@@ -509,11 +250,8 @@
       <div class="system-subtitle">ระบบสืบค้นหมายจับ</div>
     </div>
 
-    <!-- Minimalist User Bar -->
     <div id="profileSection" class="user-bar hidden">
-      <div class="profile-avatar" id="profileAvatar">
-        <i class="fas fa-user"></i>
-      </div>
+      <div class="profile-avatar" id="profileAvatar"><i class="fas fa-user"></i></div>
       <span id="userName">-</span>
       <div class="online-indicator">
         <span class="online-text">Connected</span>
@@ -521,29 +259,19 @@
       </div>
     </div>
 
-    <!-- Toggle Controls -->
     <div class="search-type-toggle">
-      <button class="toggle-btn active" data-type="id13">
-        <i class="fas fa-id-card"></i> เลขบัตรประชาชน
-      </button>
-      <button class="toggle-btn" data-type="name">
-        <i class="fas fa-users"></i> ชื่อ - นามสกุล
-      </button>
+      <button class="toggle-btn active" data-type="id13"><i class="fas fa-id-card"></i> เลขบัตรประชาชน</button>
+      <button class="toggle-btn" data-type="name"><i class="fas fa-users"></i> ชื่อ - นามสกุล</button>
     </div>
 
-    <!-- Main Dynamic Input (Removed label as requested) -->
     <div class="input-group">
-      <input type="number" id="searchInput" placeholder="กรอกเลขบัตรประชาชน 13 หลัก" autocomplete="off">
+      <input type="text" id="searchInput" inputmode="numeric" maxlength="13" pattern="[0-9]*" placeholder="กรอกเลขบัตรประชาชน 13 หลัก" autocomplete="off">
     </div>
 
-    <!-- One Master Tactical Button -->
     <div class="button-group">
-      <button class="search-btn" id="searchBtn">
-        <i class="fas fa-search"></i> ค้นหาหมายจับ
-      </button>
+      <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i> ค้นหาหมายจับ</button>
     </div>
 
-    <!-- Result Console (Initially Empty as requested) -->
     <div class="result-section" id="resultArea"></div>
   </div>
 </div>
@@ -552,308 +280,209 @@
 
 <script src="https://static.line-scdn.net/liff/edge/versions/2.23.0/sdk.js"></script>
 <script>
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbyss_zHh0OcITnBgf86OQCL_TMBbWLuyYkQpI2gyQIzXPYOlW0VLOo5O1i2gs2RC13a/exec";
-  const LIFF_ID = "2010272973-QI3DZhXq";          
+// ------------------------------------------------------------
+// Configuration
+// ------------------------------------------------------------
+var GAS_URL = "https://script.google.com/macros/s/AKfycbyXZ5XD9TxcI3BORPJXF5sDWkAx0FEOZE5QVCPCIW422JSVQBki8IqHOO3B5Lkt2Qrz/exec";
+var LIFF_ID = "2010272973-QI3DZhXq";
 
-  let lineProfile = { userId: '', displayName: '', pictureUrl: '' };
-  let currentSearchType = "id13";
-  let isAuthorized = false;
+var lineProfile = { userId: '', displayName: '', pictureUrl: '' };
+var currentSearchType = "id13";
 
-  function showLoading(show, customText = null) {
-    const overlay = document.getElementById("loadingOverlay");
-    const textElem = document.getElementById("loadingText");
-    
-    if (show) {
-      if (customText) textElem.innerText = customText.toUpperCase();
-      overlay.classList.add("active");
+// ------------------------------------------------------------
+// Client Cache (localStorage + 30s TTL)
+// ------------------------------------------------------------
+function cacheGet(key) { try { var raw = localStorage.getItem('wt_' + key); if (!raw) return null; var obj = JSON.parse(raw); return Date.now() < obj.exp ? obj.data : null; } catch(e) { return null; } }
+function cacheSet(key, data, ttl) { try { localStorage.setItem('wt_' + key, JSON.stringify({ data: data, exp: Date.now() + (ttl || 30000) })); } catch(e) {} }
+
+// ------------------------------------------------------------
+// Loading
+// ------------------------------------------------------------
+function showLoading(show, text) {
+  var overlay = document.getElementById("loadingOverlay");
+  var el = document.getElementById("loadingText");
+  if (show) { if (text) el.innerText = text.toUpperCase(); overlay.classList.add("active"); }
+  else { overlay.classList.remove("active"); setTimeout(function() { el.innerText = "SYNCHRONIZING DATABASE"; }, 300); }
+}
+
+// ------------------------------------------------------------
+// Escape HTML
+// ------------------------------------------------------------
+function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, function(m) { if (m==='&') return '&'; if (m==='<') return '<'; if (m==='>') return '>'; if (m==='"') return '"'; if (m==="'") return '&#39;'; return m; }); }
+
+// ------------------------------------------------------------
+// Display Result
+// ------------------------------------------------------------
+function showResult(type, message, data) {
+  var div = document.getElementById("resultArea");
+  div.style.animation = 'none';
+  div.offsetHeight;
+  div.style.animation = null;
+
+  if (type === "info") { div.innerHTML = '<div class="info-box"><i class="fas fa-info-circle"></i> ' + esc(message) + '</div>'; return; }
+  if (type === "error") { div.innerHTML = '<div class="error-box"><i class="fas fa-exclamation-triangle"></i> ' + esc(message) + '</div>'; return; }
+  if (type === "success") { div.innerHTML = '<div class="success-box"><i class="fas fa-check-circle"></i> ' + esc(message) + '</div>'; return; }
+  if (type === "table" && data) {
+    if (data.length === 0) { div.innerHTML = '<div class="info-box"><i class="fas fa-search"></i> ไม่พบข้อมูลในระบบ</div>'; return; }
+
+    var html = '<div class="result-title"><i class="fas fa-database"></i> พบข้อมูล ' + data.length + ' รายการ</div><div class="table-container"><table class="result-table"><thead><tr><th>หมายจับ</th><th>ชื่อ-สกุล</th><th>สถานะหมายจับ</th></tr></thead><tbody>';
+    var cards = '<div class="result-cards">';
+
+    for (var i = 0; i < data.length; i++) {
+      var row = data[i];
+      var wNo = row.warrantNo || row.warrantNumber || '-';
+      var name = row.fullName || row.defendantName || '-';
+      var st = row.status || '-';
+      var charge = row.charge || '-';
+      var black = row.blackCaseNo || '-';
+      var red = row.redCaseNo || '-';
+      var badge = "neutral";
+      if (st.indexOf('ต้องการตัว') !== -1) badge = "success";
+      else if (st.indexOf('สิ้นผลรอเพิกถอน') !== -1) badge = "warning";
+      else if (st.indexOf('เพิกถอน') !== -1) badge = "danger";
+
+      html += '<tr><td style="font-weight:700;color:var(--text-main);font-family:monospace;">' + esc(wNo) + '</td><td>' + esc(name) + '</td><td><span class="badge ' + badge + '">' + esc(st) + '</span></td></tr>';
+      cards += '<article class="result-card"><div class="result-card-head"><div class="warrant-number">' + esc(wNo) + '</div><span class="badge ' + badge + '">' + esc(st) + '</span></div><div class="person-name">' + esc(name) + '</div><div class="meta-grid"><div class="meta-row"><span>คดีดำ</span><strong>' + esc(black) + '</strong></div><div class="meta-row"><span>คดีแดง</span><strong>' + esc(red) + '</strong></div><div class="meta-row"><span>ความผิด</span><strong>' + esc(charge) + '</strong></div></div></article>';
+    }
+    html += '</tbody></table></div>';
+    cards += '</div>';
+    div.innerHTML = html + cards;
+    return;
+  }
+  div.innerHTML = '';
+}
+
+// ------------------------------------------------------------
+// Debug Card
+// ------------------------------------------------------------
+function showDebugUserId(message, userIdValue) {
+  var uid = esc(userIdValue || lineProfile.userId || "ไม่สามารถดึง User ID ได้");
+  var msg = esc(message);
+  document.getElementById("resultArea").innerHTML = '<div class="debug-card"><div style="color:#ef4444;font-weight:700;margin-bottom:16px;display:flex;gap:8px;align-items:center;font-size:15px;"><i class="fas fa-shield-alt"></i> ' + msg + '</div><div style="background:#020617;color:#f8fafc;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;word-break:break-all;margin-bottom:16px;border:1px solid var(--border-color);"><strong style="color:#fca5a5;">🆔 User ID:</strong><br><span id="debugUserIdText" style="display:block;margin-top:6px;color:#93c5fd;">' + uid + '</span></div><div style="display:flex;gap:10px;flex-wrap:wrap;"><button onclick="copyDebugUserId()" class="search-btn" style="flex:1;height:46px;font-size:13px;background:#334155;"><i class="fas fa-copy"></i> คัดลอก ID</button><button onclick="location.reload()" class="search-btn" style="flex:1;height:46px;font-size:13px;background:#1e293b;"><i class="fas fa-sync-alt"></i> ลองใหม่</button></div><div style="margin-top:16px;font-size:12px;color:var(--text-muted);text-align:center;"><i class="fas fa-info-circle"></i> โปรดแจ้งชุดข้อมูลนี้แก่แอดมิน เพื่อลงทะเบียนเข้าใช้ฐานระบบ</div></div>';
+  window.copyDebugUserId = function() {
+    var text = document.getElementById("debugUserIdText").innerText;
+    navigator.clipboard.writeText(text).then(function() { alert("คัดลอกเรียบร้อย"); }).catch(function() {
+      var tmp = document.createElement("input"); tmp.value = text; document.body.appendChild(tmp); tmp.select(); document.execCommand("copy"); document.body.removeChild(tmp); alert("คัดลอกเรียบร้อย");
+    });
+  };
+}
+
+// ------------------------------------------------------------
+// API Gateway (with exponential backoff retry)
+// ------------------------------------------------------------
+async function callGas(action, payload, retryCount) {
+  if (retryCount === undefined) retryCount = 0;
+  if (!GAS_URL || !GAS_URL.startsWith("https://script.google.com/macros/s/") || !GAS_URL.endsWith("/exec")) {
+    showDebugUserId("ความล้มเหลวของการตั้งค่า (GAS_URL)", "กรุณาติดต่อชุดสืบสวนควบคุม");
+    throw new Error("GAS_URL not configured");
+  }
+  if (!lineProfile.userId) {
+    showDebugUserId("ระบบตรวจสอบยืนยันตัวตน LINE ล้มเหลว", "เปิดใน LINE แอพพิลเคชันเท่านั้น");
+    throw new Error("Not logged in");
+  }
+  try {
+    var resp = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: action, userId: lineProfile.userId, displayName: lineProfile.displayName, page: "search.html", payload: payload || {} })
+    });
+    var json = await resp.json();
+    if (json && json.success === false) {
+      if (json.error === "Unauthorized user") { showDebugUserId("ยังไม่ได้รับอนุญาตให้เข้าใช้ระบบ", lineProfile.userId); throw new Error(json.error); }
+    }
+    return json;
+  } catch(err) {
+    console.error("callGas error:", err);
+    if (err.message === "Unauthorized user" || err.message === "Not logged in") throw err;
+    if (retryCount < 3) {
+      var delay = Math.pow(2, retryCount) * 1000;
+      console.log("Retry " + (retryCount+1) + "/3 in " + delay + "ms");
+      await new Promise(function(r) { setTimeout(r, delay); });
+      return callGas(action, payload, retryCount + 1);
+    }
+    showResult("error", "การเชื่อมต่อเครือข่ายล้มเหลว กรุณาดำเนินการตรวจค้นใหม่อีกครั้ง");
+    throw err;
+  }
+}
+
+// ------------------------------------------------------------
+// Search (with client cache)
+// ------------------------------------------------------------
+async function performSearch() {
+  var input = document.getElementById("searchInput");
+  var keyword = input.value.trim();
+  if (!keyword) { showResult("error", "ระบุข้อมูลสืบค้นก่อนดำเนินการ"); input.focus(); return; }
+  if (currentSearchType === "id13" && !/^\d{13}$/.test(keyword)) { showResult("error", "เลขบัตรประชาชนต้องครบ 13 หลัก"); return; }
+  if (currentSearchType === "name" && keyword.length < 2) { showResult("error", "ต้องระบุชื่ออย่างน้อย 2 ตัวอักษร"); return; }
+
+  var cacheKey = 'srch_' + currentSearchType + '_' + keyword;
+  var cached = cacheGet(cacheKey);
+  if (cached) { showResult("table", "", cached); return; }
+
+  showLoading(true, "Querying Database Central...");
+  try {
+    var result = await callGas("search", { keyword: keyword });
+    if (result && result.success === false) {
+      showResult("error", result.error || result.message || "เกิดความผิดพลาดในการเข้าถึงสารบรรณ");
     } else {
-      overlay.classList.remove("active");
-      setTimeout(() => { textElem.innerText = "SYNCHRONIZING DATABASE"; }, 300);
+      var data = result.data || [];
+      cacheSet(cacheKey, data);
+      showResult("table", "", data);
     }
-  }
+  } catch(err) { console.error(err); }
+  finally { showLoading(false); }
+}
 
-  function showResult(type, message, data = null) {
-    const resultDiv = document.getElementById("resultArea");
-    
-    // Clear & restart animations
-    resultDiv.style.animation = 'none';
-    resultDiv.offsetHeight; 
-    resultDiv.style.animation = null; 
-
-    if (type === "info") {
-      resultDiv.innerHTML = `<div class="info-box"><i class="fas fa-info-circle"></i> ${message}</div>`;
-    } else if (type === "error") {
-      resultDiv.innerHTML = `<div class="error-box"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
-    } else if (type === "success") {
-      resultDiv.innerHTML = `<div class="success-box"><i class="fas fa-check-circle"></i> ${message}</div>`;
-    } else if (type === "table" && data) {
-      if (data.length === 0) {
-        resultDiv.innerHTML = `<div class="info-box"><i class="fas fa-search"></i> ไม่พบข้อมูลในระบบ</div>`;
-        return;
-      }
-      
-      let html = `
-        <div class="result-title">
-          <i class="fas fa-database"></i> พบข้อมูล ${data.length} รายการ
-        </div>
-        <div class="table-container">
-          <table class="result-table">
-            <thead>
-              <tr><th>หมายจับ</th><th>ชื่อ-สกุล</th><th>สถานะ</th></tr>
-            </thead>
-            <tbody>
-      `;
-      let cardHtml = `<div class="result-cards">`;
-      
-      for (let row of data) {
-        let badgeClass = "neutral";
-        if (row.status) {
-          if (row.status.includes('ต้องการตัว')) {
-            badgeClass = "success";
-          } else if (row.status.includes('สิ้นผลรอเพิกถอน')) {
-            badgeClass = "warning";
-          } else if (row.status.includes('เพิกถอน')) {
-            badgeClass = "danger";
-          }
-        }
-
-        html += `
-          <tr>
-            <td style="font-weight: 700; color: var(--text-main); font-family: monospace;">${escapeHtml(row.warrantNo || '-')}</td>
-            <td>${escapeHtml(row.fullName || '-')}</td>
-            <td>
-              <span class="badge ${badgeClass}">${escapeHtml(row.status || '-')}</span>
-            </td>
-          </tr>
-        `;
-        cardHtml += `
-          <article class="result-card">
-            <div class="result-card-head">
-              <div class="warrant-number">${escapeHtml(row.warrantNo || '-')}</div>
-              <span class="badge ${badgeClass}">${escapeHtml(row.status || '-')}</span>
-            </div>
-            <div class="person-name">${escapeHtml(row.fullName || '-')}</div>
-            <div class="meta-grid">
-              <div class="meta-row"><span>คดีดำ</span><strong>${escapeHtml(row.blackCaseNo || '-')}</strong></div>
-              <div class="meta-row"><span>คดีแดง</span><strong>${escapeHtml(row.redCaseNo || '-')}</strong></div>
-              <div class="meta-row"><span>ความผิด</span><strong>${escapeHtml(row.charge || '-')}</strong></div>
-            </div>
-          </article>
-        `;
-      }
-      
-      html += `</tbody></table></div>`;
-      cardHtml += `</div>`;
-      resultDiv.innerHTML = html + cardHtml;
-    }
-  }
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
-  }
-
-  function showDebugUserId(message, userIdValue = null) {
-    const userIdToShow = userIdValue || lineProfile.userId || "ไม่สามารถดึง User ID ได้";
-    const resultDiv = document.getElementById("resultArea");
-    
-    let debugHtml = `
-      <div class="debug-card">
-        <div style="color: #ef4444; font-weight: 700; margin-bottom: 16px; display: flex; gap: 8px; align-items: center; font-size: 15px;">
-          <i class="fas fa-shield-alt"></i> ${message}
-        </div>
-        <div style="background: #020617; color: #f8fafc; padding: 16px; border-radius: 8px; font-family: monospace; font-size: 13px; word-break: break-all; margin-bottom: 16px; border: 1px solid var(--border-color);">
-          <strong style="color: #fca5a5;">🆔 User ID:</strong><br>
-          <span id="debugUserIdText" style="display: block; margin-top: 6px; color: #93c5fd;">${userIdToShow}</span>
-        </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button onclick="copyDebugUserId()" class="search-btn" style="flex: 1; height: 46px; font-size: 13px; background: #334155;">
-            <i class="fas fa-copy"></i> คัดลอก ID
-          </button>
-          <button onclick="location.reload()" class="search-btn" style="flex: 1; height: 46px; font-size: 13px; background: #1e293b;">
-            <i class="fas fa-sync-alt"></i> ลองใหม่
-          </button>
-        </div>
-        <div style="margin-top: 16px; font-size: 12px; color: var(--text-muted); text-align: center;">
-          <i class="fas fa-info-circle"></i> โปรดแจ้งชุดข้อมูลนี้แก่แอดมิน เพื่อลงทะเบียนเข้าใช้ฐานระบบ
-        </div>
-      </div>
-    `;
-    resultDiv.innerHTML = debugHtml;
-    window.copyDebugUserId = function() {
-      const text = document.getElementById("debugUserIdText").innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("✅ คัดลอกระบบเรียบร้อย");
-      }).catch(() => {
-        const tempInput = document.createElement("input");
-        tempInput.value = text;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand("copy");
-        document.body.removeChild(tempInput);
-        alert("✅ คัดลอกระบบเรียบร้อย");
-      });
-    };
-  }
-
-  async function callGas(action, payload = {}) {
-    if (!GAS_URL || !GAS_URL.startsWith("https://script.google.com/macros/s/") || !GAS_URL.endsWith("/exec")) {
-      showDebugUserId("ความล้มเหลวของการตั้งค่า (GAS_URL)", "กรุณาติดต่อชุดสืบสวนควบคุม");
-      throw new Error("GAS_URL not configured");
-    }
-    if (!lineProfile.userId) {
-      showDebugUserId("ระบบตรวจสอบยืนยันตัวตน LINE ล้มเหลว", "เปิดใน LINE แอพพิลเคชันเท่านั้น");
-      throw new Error("Not logged in");
-    }
-    try {
-      const response = await fetch(GAS_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({
-          action: action,
-          userId: lineProfile.userId,
-          displayName: lineProfile.displayName,
-          page: "search.html",
-          ...payload
-        })
-      });
-      return await response.json();
-    } catch(err) {
-      console.error("callGas error:", err);
-      showResult("error", "การเชื่อมต่อเครือข่ายล้มเหลว กรุณาดำเนินการตรวจค้นใหม่อีกครั้ง");
-      throw err;
-    }
-  }
-
-  async function performSearch() {
-    const searchInput = document.getElementById("searchInput");
-    let keyword = searchInput.value.trim();
-    
-    if (!keyword) {
-      showResult("error", "ระบุข้อมูลสืบค้นก่อนดำเนินการ");
-      searchInput.focus();
-      return;
-    }
-    
-    if (currentSearchType === "id13") {
-      if (!/^\d{13}$/.test(keyword)) {
-        showResult("error", "ข้อบังคับ: เลขประจำตัวประชาชนต้องครบ 13 หลัก");
-        return;
-      }
-    } else if (currentSearchType === "name") {
-      if (keyword.length < 2) {
-        showResult("error", "ข้อบังคับ: ต้องระบุชื่ออย่างน้อย 2 ตัวอักษร");
-        return;
-      }
-    }
-    
-    showLoading(true, "Querying Database Central...");
-    try {
-      const result = await callGas("search", {
-        searchType: currentSearchType,
-        keyword: keyword
-      });
-      
-      if (result && result.success === false) {
-        showResult("error", result.error || result.message || "เกิดความผิดพลาดในการเข้าถึงสารบบ");
-      } else {
-        showResult("table", "", result.data || []);
-      }
-    } catch(err) {
-      console.error(err);
-    } finally {
-      showLoading(false);
-    }
-  }
-
-  function initLiff() {
-    return new Promise((resolve, reject) => {
-      liff.init({ liffId: LIFF_ID }, () => {
-        if (liff.isLoggedIn()) {
-          liff.getProfile().then(profile => {
-            lineProfile.userId = profile.userId;
-            lineProfile.displayName = profile.displayName;
-            lineProfile.pictureUrl = profile.pictureUrl || "";
-            
-            document.getElementById("userName").innerText = profile.displayName;
-            
-            const hiddenUserIdSpan = document.getElementById("userIdDisplay");
-            if(hiddenUserIdSpan) hiddenUserIdSpan.innerText = profile.userId;
-            
-            const avatarDiv = document.getElementById("profileAvatar");
-            if (profile.pictureUrl) {
-              avatarDiv.innerHTML = `<img src="${profile.pictureUrl}" alt="Profile">`;
-            } else {
-              avatarDiv.innerHTML = `<i class="fas fa-user"></i>`;
-            }
-            document.getElementById("profileSection").classList.remove("hidden");
-            resolve(true);
-          }).catch(err => {
-            console.error("getProfile error:", err);
-            reject(err);
-          });
-        } else {
-          liff.login();
-          reject(new Error("Need login"));
-        }
-      }, err => {
-        console.error("liff.init error:", err);
-        reject(err);
-      });
-    });
-  }
-
-  // Event Listeners
-  document.getElementById("searchBtn").addEventListener("click", performSearch);
-  
-  document.getElementById("searchInput").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") performSearch();
+// ------------------------------------------------------------
+// LIFF Init
+// ------------------------------------------------------------
+function initLiff() {
+  return new Promise(function(resolve, reject) {
+    liff.init({ liffId: LIFF_ID }, function() {
+      if (liff.isLoggedIn()) {
+        liff.getProfile().then(function(profile) {
+          lineProfile.userId = profile.userId;
+          lineProfile.displayName = profile.displayName;
+          lineProfile.pictureUrl = profile.pictureUrl || "";
+          document.getElementById("userName").innerText = profile.displayName;
+          var uidSpan = document.getElementById("userIdDisplay");
+          if (uidSpan) uidSpan.innerText = profile.userId;
+          var avatar = document.getElementById("profileAvatar");
+          avatar.innerHTML = profile.pictureUrl ? '<img src="' + profile.pictureUrl + '" alt="Profile">' : '<i class="fas fa-user"></i>';
+          document.getElementById("profileSection").classList.remove("hidden");
+          resolve(true);
+        }).catch(function(err) { console.error("getProfile error:", err); reject(err); });
+      } else { liff.login(); reject(new Error("Need login")); }
+    }, function(err) { console.error("liff.init error:", err); reject(err); });
   });
-  
-  document.querySelectorAll(".toggle-btn").forEach(btn => {
-    btn.addEventListener("click", function() {
-      document.querySelectorAll(".toggle-btn").forEach(b => b.classList.remove("active"));
-      this.classList.add("active");
-      
-      currentSearchType = this.getAttribute("data-type");
-      const input = document.getElementById("searchInput");
-      
-      if (currentSearchType === "id13") {
-        input.type = "number";
-        input.inputMode = "numeric";
-        input.placeholder = "กรอกเลขบัตรประชาชน 13 หลัก";
-      } else {
-        input.type = "text";
-        input.inputMode = "text";
-        input.placeholder = "กรอกชื่อ-สกุล (เช่น สมชาย จริงใจ)";
-      }
-      
-      input.value = ""; // Auto clean form when mode switches
-      input.focus();
-    });
-  });
+}
 
-  // Init Application
-  window.addEventListener("DOMContentLoaded", async () => {
-    try {
-      await initLiff();
-      // Removed default showResult info-box call so the bottom area remains clean and empty initially
-    } catch (err) {
-      console.error("Init error:", err);
-      showDebugUserId("การเชื่อมต่อฐานข้อมูลความมั่นคงจำกัดสิทธิ์", "กรุณาลงทะเบียนผ่านเบราว์เซอร์ผู้พิทักษ์สันติราษฎร์");
-    } finally {
-      setTimeout(() => showLoading(false), 800);
-    }
+// ------------------------------------------------------------
+// Events
+// ------------------------------------------------------------
+document.getElementById("searchBtn").addEventListener("click", performSearch);
+document.getElementById("searchInput").addEventListener("keypress", function(e) { if (e.key === "Enter") performSearch(); });
+
+document.querySelectorAll(".toggle-btn").forEach(function(btn) {
+  btn.addEventListener("click", function() {
+    document.querySelectorAll(".toggle-btn").forEach(function(b) { b.classList.remove("active"); });
+    this.classList.add("active");
+    currentSearchType = this.getAttribute("data-type");
+    var inp = document.getElementById("searchInput");
+    if (currentSearchType === "id13") { inp.inputMode = "numeric"; inp.maxLength = 13; inp.placeholder = "กรอกเลขบัตรประชาชน 13 หลัก"; }
+    else { inp.inputMode = "text"; inp.removeAttribute("maxlength"); inp.placeholder = "กรอกชื่อ-สกุล (เช่น สมชาย จริงใจ)"; }
+    inp.value = ""; inp.focus();
   });
+});
+
+document.getElementById("searchInput").addEventListener("input", function() {
+  if (currentSearchType === "id13") this.value = this.value.replace(/\D/g, "").slice(0, 13);
+});
+
+window.addEventListener("DOMContentLoaded", async function() {
+  try { await initLiff(); } catch (err) { console.error("Init error:", err); showDebugUserId("การเชื่อมต่อฐานข้อมูลความมั่นคงจำกัดสิทธิ์", "กรุณาลงทะเบียนผ่านเบราว์เซอร์ผู้พิทักษ์สันติราษฎร์"); }
+  finally { setTimeout(function() { showLoading(false); }, 800); }
+});
 </script>
 </body>
 </html>
-
-
-
-
-
