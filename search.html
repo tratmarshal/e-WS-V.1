@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -290,12 +290,6 @@ var lineProfile = { userId: '', displayName: '', pictureUrl: '' };
 var currentSearchType = "id13";
 
 // ------------------------------------------------------------
-// Client Cache (localStorage + 30s TTL)
-// ------------------------------------------------------------
-function cacheGet(key) { try { var raw = localStorage.getItem('wt_' + key); if (!raw) return null; var obj = JSON.parse(raw); return Date.now() < obj.exp ? obj.data : null; } catch(e) { return null; } }
-function cacheSet(key, data, ttl) { try { localStorage.setItem('wt_' + key, JSON.stringify({ data: data, exp: Date.now() + (ttl || 30000) })); } catch(e) {} }
-
-// ------------------------------------------------------------
 // Loading
 // ------------------------------------------------------------
 function showLoading(show, text) {
@@ -406,7 +400,7 @@ async function callGas(action, payload, retryCount) {
 }
 
 // ------------------------------------------------------------
-// Search (with client cache)
+// Search (no client cache)
 // ------------------------------------------------------------
 async function performSearch() {
   var input = document.getElementById("searchInput");
@@ -415,10 +409,6 @@ async function performSearch() {
   if (currentSearchType === "id13" && !/^\d{13}$/.test(keyword)) { showResult("error", "เลขบัตรประชาชนต้องครบ 13 หลัก"); return; }
   if (currentSearchType === "name" && keyword.length < 2) { showResult("error", "ต้องระบุชื่ออย่างน้อย 2 ตัวอักษร"); return; }
 
-  var cacheKey = 'srch_' + currentSearchType + '_' + keyword;
-  var cached = cacheGet(cacheKey);
-  if (cached) { showResult("table", "", cached); return; }
-
   showLoading(true, "Querying Database Central...");
   try {
     var result = await callGas("search", { keyword: keyword });
@@ -426,7 +416,6 @@ async function performSearch() {
       showResult("error", result.error || result.message || "เกิดความผิดพลาดในการเข้าถึงสารบรรณ");
     } else {
       var data = result.data || [];
-      cacheSet(cacheKey, data);
       showResult("table", "", data);
     }
   } catch(err) { console.error(err); }
