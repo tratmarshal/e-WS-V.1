@@ -286,7 +286,7 @@
 var GAS_URL = "https://script.google.com/macros/s/AKfycbxQFqutUu9urZnhFO-OuKkIU3NYmRwhaFP8l-I9h6XiT33p8Yluv5O9so6GMHW0ZRk/exec";
 var LIFF_ID = "2010276759-IZoVxJjH";
 
-var lineProfile = { userId: '', displayName: '', pictureUrl: '', idToken: '' };
+var lineProfile = { userId: '', displayName: '', pictureUrl: '' };
 var currentSearchType = "id13";
 
 // ------------------------------------------------------------
@@ -370,17 +370,15 @@ async function callGas(action, payload, retryCount) {
     showDebugUserId("ความล้มเหลวของการตั้งค่า (GAS_URL)", "กรุณาติดต่อชุดสืบสวนควบคุม");
     throw new Error("GAS_URL not configured");
   }
-  // อัปเดต ID Token ให้สดใหม่ก่อนส่งทุกครั้ง
-  try { lineProfile.idToken = liff.getIDToken(); } catch(e) { console.warn("Failed to refresh ID Token", e); }
-  if (!lineProfile.idToken) {
-    showDebugUserId("ระบบตรวจสอบยืนยันตัวตน LINE ล้มเหลว หรือเซสชันหมดอายุ", "เปิดใน LINE แอพพิลเคชันเท่านั้น");
+  if (!lineProfile.userId) {
+    showDebugUserId("ระบบตรวจสอบยืนยันตัวตน LINE ล้มเหลว", "เปิดใน LINE แอพพิลเคชันเท่านั้น");
     throw new Error("Not logged in");
   }
   try {
     var resp = await fetch(GAS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: action, idToken: lineProfile.idToken, liffId: LIFF_ID, displayName: lineProfile.displayName, page: "search.html", payload: payload || {} })
+      body: JSON.stringify({ action: action, userId: lineProfile.userId, displayName: lineProfile.displayName, page: "search.html", payload: payload || {} })
     });
     var json = await resp.json();
     if (json && json.success === false) {
@@ -432,11 +430,9 @@ function initLiff() {
     liff.init({ liffId: LIFF_ID }, function() {
       if (liff.isLoggedIn()) {
         liff.getProfile().then(function(profile) {
-          var idToken = liff.getIDToken();
           lineProfile.userId = profile.userId;
           lineProfile.displayName = profile.displayName;
           lineProfile.pictureUrl = profile.pictureUrl || "";
-          lineProfile.idToken = idToken;
           document.getElementById("userName").innerText = profile.displayName;
           var uidSpan = document.getElementById("userIdDisplay");
           if (uidSpan) uidSpan.innerText = profile.userId;
