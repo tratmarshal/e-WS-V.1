@@ -364,42 +364,35 @@ function showDebugUserId(message, userIdValue) {
 // ------------------------------------------------------------
 // API Gateway (with exponential backoff retry)
 // ------------------------------------------------------------
-async function callGas(action, payload, retryCount) {
-  if (retryCount === undefined) retryCount = 0;
-  if (!GAS_URL || !GAS_URL.startsWith("https://script.google.com/macros/s/") || !GAS_URL.endsWith("/exec")) {
-    showDebugUserId("ความล้มเหลวของการตั้งค่า (GAS_URL)", "กรุณาติดต่อชุดสืบสวนควบคุม");
-    throw new Error("GAS_URL not configured");
-  }
-  // อัปเดต ID Token ให้สดใหม่ก่อนส่งทุกครั้ง
-  try { lineProfile.idToken = liff.getIDToken(); } catch(e) { console.warn("Failed to refresh ID Token", e); }
-  if (!lineProfile.idToken) {
-    showDebugUserId("ระบบตรวจสอบยืนยันตัวตน LINE ล้มเหลว หรือเซสชันหมดอายุ", "เปิดใน LINE แอพพิลเคชันเท่านั้น");
-    throw new Error("Not logged in");
-  }
-  try {
-    var resp = await fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: action, idToken: lineProfile.idToken, liffId: LIFF_ID, displayName: lineProfile.displayName, page: "search.html", payload: payload || {} })
-    });
-    var json = await resp.json();
-    if (json && json.success === false) {
-      if (json.error === "Unauthorized user") { showDebugUserId("ยังไม่ได้รับอนุญาตให้เข้าใช้ระบบ", lineProfile.userId); throw new Error(json.error); }
+async function callGas(action, payload = {}) {
+    if (!GAS_URL || !GAS_URL.startsWith("https://script.google.com/macros/s/") || !GAS_URL.endsWith("/exec")) {
+      showDebugUserId("ความล้มเหลวของการตั้งค่า (GAS_URL)", "กรุณาติดต่อชุดสืบสวนควบคุม");
+      throw new Error("GAS_URL not configured");
     }
-    return json;
-  } catch(err) {
-    console.error("callGas error:", err);
-    if (err.message === "Unauthorized user" || err.message === "Not logged in") throw err;
-    if (retryCount < 3) {
-      var delay = Math.pow(2, retryCount) * 1000;
-      console.log("Retry " + (retryCount+1) + "/3 in " + delay + "ms");
-      await new Promise(function(r) { setTimeout(r, delay); });
-      return callGas(action, payload, retryCount + 1);
+    if (!lineProfile.userId) {
+      showDebugUserId("ระบบตรวจสอบยืนยันตัวตน LINE ล้มเหลว", "เปิดใน LINE แอพพิลเคชันเท่านั้น");
+      throw new Error("Not logged in");
     }
-    showResult("error", "การเชื่อมต่อเครือข่ายล้มเหลว กรุณาดำเนินการตรวจค้นใหม่อีกครั้ง");
-    throw err;
+    try {
+      const response = await fetch(GAS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          action: action,
+          idToken: liff.getIDToken(), // เปลี่ยนจาก accessToken เป็น idToken เพื่อส่งค่าระบุตัวตนที่ปลอดภัย
+          liffId: LIFF_ID,            // ส่งค่า LIFF_ID ไปด้วย เพื่อให้เซิร์ฟเวอร์หลังบ้านนำไปแยกหา Channel ID
+          displayName: lineProfile.displayName,
+          page: "search.html",
+          ...payload
+        })
+      });
+      return await response.json();
+    } catch(err) {
+      console.error("callGas error:", err);
+      showResult("error", "การเชื่อมต่อเครือข่ายล้มเหลว กรุณาดำเนินการตรวจค้นใหม่อีกครั้ง");
+      throw err;
+    }
   }
-}
 
 // ------------------------------------------------------------
 // Search (no client cache)
