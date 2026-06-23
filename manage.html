@@ -1189,7 +1189,7 @@
   const GAS_URL = "https://script.google.com/macros/s/AKfycbxQFqutUu9urZnhFO-OuKkIU3NYmRwhaFP8l-I9h6XiT33p8Yluv5O9so6GMHW0ZRk/exec";
   const LIFF_ID = "2010276759-5PcdBjAf";
 
-  let currentUser = { userId: "", displayName: "", pictureUrl: "", idToken: "" };
+  let currentUser = { userId: "", displayName: "", pictureUrl: "" };
   let currentTab = 'active';
   let currentSearchedDefendant = null;
   let pendingDataToSave = null;
@@ -1206,12 +1206,10 @@
       await liff.init({ liffId: LIFF_ID });
       if (liff.isLoggedIn()) {
         const profile = await liff.getProfile();
-        const idToken = liff.getIDToken();
         currentUser = {
           userId: profile.userId,
           displayName: profile.displayName,
-          pictureUrl: profile.pictureUrl || "",
-          idToken: idToken
+          pictureUrl: profile.pictureUrl || ""
         };
         const profileEl = document.getElementById('userProfile');
         profileEl.classList.remove('hidden');
@@ -1245,10 +1243,8 @@
   async function callGas(action, payload, retryCount) {
     if (retryCount === undefined) retryCount = 0;
     showLoading(true);
-    // อัปเดต ID Token ให้สดใหม่ก่อนส่งทุกครั้ง
-    try { currentUser.idToken = liff.getIDToken(); } catch(e) { console.warn("Failed to refresh ID Token", e); }
-    if (!currentUser.idToken) { showLoading(false); throw new Error("ไม่พบสิทธิ์การลงทะเบียน หรือเซสชันหมดอายุ กรุณาเปิดหน้าจอใหม่อีกครั้ง"); }
-    const requestData = { action, idToken: currentUser.idToken, liffId: LIFF_ID, displayName: currentUser.displayName, page: "manage", payload: payload || {} };
+    if (!currentUser.userId) { showLoading(false); throw new Error("ไม่พบสิทธิ์ผู้ใช้งาน"); }
+    const requestData = { action, userId: currentUser.userId, displayName: currentUser.displayName, page: "manage", payload: payload || {} };
     try {
       const res = await fetch(GAS_URL, {
         method: "POST", mode: "cors",
@@ -1274,8 +1270,8 @@
   }
 
   function triggerBackgroundSync() {
-    if (!currentUser.idToken) return;
-    const data = { action: "syncProcessing", idToken: currentUser.idToken, liffId: LIFF_ID, displayName: currentUser.displayName, page: "manage", payload: {} };
+    if (!currentUser.userId) return;
+    const data = { action: "syncProcessing", userId: currentUser.userId, displayName: currentUser.displayName, page: "manage", payload: {} };
     fetch(GAS_URL, { method: "POST", mode: "cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(data) })
       .then(res => res.json()).then(json => { if (json.success && json.synced > 0) fetchDataFromGAS(); })
       .catch(e => console.log("Background sync", e));
