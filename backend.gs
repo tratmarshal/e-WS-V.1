@@ -2,8 +2,8 @@
 // Consolidated Backend for Warrant Tracker — Optimized v2
 // ========== CONFIGURATION ==========
 
-const WARRANT_DB_ID = "1sq8GyDDiqS2U989TpcTlMyJ5P9gtrRTgbJjcQHtEOB4";
-const UPDATE_DB_ID = "1mP3tver14Tp0wYd9xkk4Lh5Mv_g39UPy06juu8t_Dgk";
+const WARRANT_DB_ID = "1gg0hX7IWMeyyYik9oFQphSJIJEzJaju2VT2DpLluc2E";
+const UPDATE_DB_ID = "18rpfC0MuEvb73ldDyuevqYECA9LClEY5wYCi7lZ87Go";
 
 const SHEET_USERS = "users";
 const SHEET_LOGS = "log";
@@ -135,7 +135,7 @@ function getWarrantColumnMap_(headers) {
     warrantNo: indexOfHeader(headers, ["เลขที่หมายจับ"], 2),
     issuedDate: indexOfHeader(headers, ["วันที่ออก"], 3),
     fullName: indexOfHeader(headers, ["ชื่อสกุล", "ชื่อ-สกุล"], 4),
-    id13: indexOfHeader(headers, ["13 หลัก", "เลขบัตรประชาชน", "เลขประจำตัวประชาชน"], 5),
+    id13: indexOfHeader(headers, ["13 หลัก", "เลขบัตรประชาชน", "เลขประจำตัวประชาชน", "เลขบัตรประจำตัว"], 5),
     blackCaseNo: indexOfHeader(headers, ["เลขคดีดำ"], 6),
     redCaseNo: indexOfHeader(headers, ["เลขคดีแดง"], 7),
     charge: indexOfHeader(headers, ["ความผิด"], 8),
@@ -389,14 +389,8 @@ function clearWarrantCache_() {
 }
 
 function getCachedWarrantSearch_(searchType, term) {
-  if (!term) return loadWarrantSearchFromSheets_(searchType, term);
-  const cache = CacheService.getScriptCache();
-  const cacheKey = WARRANT_SEARCH_CACHE_KEY + ":" + searchType + ":" + term;
-  const cached = cache.get(cacheKey);
-  if (cached) { try { return JSON.parse(cached); } catch (err) { cache.remove(cacheKey); } }
-  const results = loadWarrantSearchFromSheets_(searchType, term);
-  try { cache.put(cacheKey, JSON.stringify(results), WARRANT_SEARCH_CACHE_TTL_SECONDS); } catch (e) {}
-  return results;
+  // No cache — always read from sheets directly
+  return loadWarrantSearchFromSheets_(searchType, term);
 }
 
 function getCachedPendingProcess_() {
@@ -443,6 +437,40 @@ function loadPendingProcessFromSheets_() {
 }
 
 // ========== AUTHENTICATION ==========
+
+function verifyLineIdToken(idToken, clientId) {
+  if (!idToken || !clientId) throw new Error("Missing idToken or clientId");
+  
+  // แยกเฉพาะ Channel ID (ตัวเลขก่อนเครื่องหมาย -)
+  const cleanClientId = clientId.split("-")[0];
+  
+  const url = "https://api.line.me/oauth2/v2.1/verify";
+  const payload = "id_token=" + encodeURIComponent(idToken) + 
+                  "&client_id=" + encodeURIComponent(cleanClientId);
+  
+  const options = {
+    method: "post",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    payload: payload,
+    muteHttpExceptions: true
+  };
+  
+  const response = UrlFetchApp.fetch(url, options);
+  const responseCode = response.getResponseCode();
+  const responseText = response.getContentText();
+  
+  if (responseCode !== 200) {
+    console.error("LINE token verification failed:", responseCode, responseText);
+    throw new Error("Invalid ID token: การตรวจสอบตัวตนกับ LINE ล้มเหลว");
+  }
+  
+  const result = JSON.parse(responseText);
+  return {
+    userId: result.sub,        // LINE userId ที่ LINE ยืนยันแล้ว
+    displayName: result.name,
+    pictureUrl: result.picture
+  };
+}
 
 function getAuthorizedUserIds_() {
   const cache = CacheService.getScriptCache();
@@ -818,10 +846,18 @@ function doPost(e) {
     if (!e || !e.postData || !e.postData.contents) return jsonResponse_({ success: false, error: "No data received" });
     const data = JSON.parse(e.postData.contents);
     action = data.action || "unknown";
-    userId = data.userId || "";
+    const idToken = data.idToken || "";
+    const liffId = data.liffId || "";
     displayName = data.displayName || "";
     page = data.page || "unknown";
     const payload = data.payload || data;
+
+    // ตรวจสอบ ID Token กับ LINE API
+    if (!idToken) throw new Error("Missing ID token: ไม่พบข้อมูลยืนยันตัวตน");
+    const verified = verifyLineIdToken(idToken, liffId);
+    userId = verified.userId;  // userId ที่ LINE ยืนยันแล้ว
+    displayName = displayName || verified.displayName || "";
+
     authStatus = getAuthorizationStatus(userId);
     logActivity(userId, displayName, page, action, authStatus, "request");
     if (authStatus !== "authorized") return jsonResponse_({ success: false, error: "Unauthorized user" });
