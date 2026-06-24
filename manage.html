@@ -1181,7 +1181,6 @@
 </div>
 
 <!-- ==================== JAVASCRIPT ==================== -->
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script>
   // -------------------------------------------------------------
   // Configuration
@@ -1199,43 +1198,20 @@
   // -------------------------------------------------------------
   // Initialization
   // -------------------------------------------------------------
-  window.onload = function() { initializeLiff(); };
+  window.onload = function() {
+  document.getElementById('loginGate').classList.add('hidden');
+  document.getElementById('mainContent').classList.remove('hidden');
 
-  async function initializeLiff() {
-    try {
-      await liff.init({ liffId: LIFF_ID });
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
-        currentUser = {
-          userId: profile.userId,
-          displayName: profile.displayName,
-          pictureUrl: profile.pictureUrl || ""
-        };
-        const profileEl = document.getElementById('userProfile');
-        profileEl.classList.remove('hidden');
-        document.getElementById('userName').innerText = currentUser.displayName;
-        if (currentUser.pictureUrl) {
-          const img = document.getElementById('userPicture');
-          img.src = currentUser.pictureUrl;
-          img.classList.remove('hidden');
-          img.style.display = 'inline';
-          document.getElementById('avatarPlaceholder').classList.add('hidden');
-        }
-        document.getElementById('loginGate').classList.add('hidden');
-        document.getElementById('mainContent').classList.remove('hidden');
-        fetchDataFromGAS();
-      } else {
-        document.getElementById('gateLoading').classList.add('hidden');
-        document.getElementById('gateLoginBtn').classList.remove('hidden');
-      }
-    } catch (err) {
-      console.error('LINE LIFF Init Failed', err);
-      document.getElementById('gateLoading').innerHTML = '<div style="color:#f87171;font-weight:700;font-size:13px;">การเชื่อมต่อสิทธิ์ความปลอดภัยผิดพลาด</div>';
-      showToast('ไม่สามารถระบุตัวตนได้ กรุณาเปิดในแอป LINE');
-    }
-  }
+  currentUser = {
+    userId: 'guest',
+    displayName: 'Guest',
+    pictureUrl: ''
+  };
 
-  function loginWithLine() { liff.login(); }
+  fetchDataFromGAS();
+};
+
+  
 
   // -------------------------------------------------------------
   // API (with exponential backoff)
@@ -1243,7 +1219,8 @@
   async function callGas(action, payload, retryCount) {
     if (retryCount === undefined) retryCount = 0;
     showLoading(true);
-    if (!currentUser.userId) { showLoading(false); throw new Error("ไม่พบสิทธิ์ผู้ใช้งาน"); }
+    if (!currentUser.userId) { currentUser.userId = "guest";
+}
     const requestData = { action, userId: currentUser.userId, displayName: currentUser.displayName, page: "manage", payload: payload || {} };
     try {
       const res = await fetch(GAS_URL, {
