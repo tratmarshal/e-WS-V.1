@@ -1,0 +1,35 @@
+// URL ที่ได้จากการ Deploy Apps Script Web App
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyss_zHh0OcITnBgf86OQCL_TMBbWLuyYkQpI2gyQIzXPYOlW0VLOo5O1i2gs2RC13a/exec";
+
+// 🔍 ตอนค้นหาข้อมูล
+function searchData(idCardNumber) {
+  fetch(WEB_APP_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "search", idCardNumber: idCardNumber })
+  })
+  .then(res => res.json())
+  .then(results => {
+    showResult(results); // เอาผลลัพธ์ไปแสดงในตาราง (เหมือนเดิม)
+  });
+}
+
+// 💾 ตอนกดบันทึกข้อมูลที่เลือก
+function saveSelectedData() {
+  var checkboxes = document.querySelectorAll('.row-select');
+  var selectedData = [];
+  checkboxes.forEach(box => {
+    if (box.checked) {
+      selectedData.push(JSON.parse(box.getAttribute('data-info')));
+    }
+  });
+
+  // ส่งข้อมูลที่เลือกกลับไปบันทึก
+  fetch(WEB_APP_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "save", selectedData: selectedData })
+  })
+  .then(res => res.json())
+  .then(response => {
+     alert('บันทึกข้อมูลสำเร็จบน GitHub แล้ว!');
+  });
+}
