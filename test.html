@@ -27,6 +27,55 @@
 </div>
 
 <script>
+  function submitSearch() {
+  var idValue = document.getElementById('idCardInput').value.trim();
+  var resultArea = document.getElementById('resultArea');
+  
+  // ตรวจสอบความถูกต้องหน้าบ้านก่อนส่ง
+  if(idValue.length !== 13 || isNaN(idValue)) {
+    alert('กรุณากรอกตัวเลขให้ครบ 13 หลัก');
+    return;
+  }
+  
+  resultArea.innerHTML = '<p class="loading">⏳ กำลังค้นหาในระบบคลาวด์...</p>';
+  
+  // ✈️ ส่งเลขไปให้หลังบ้านรัน TextFinder
+  google.script.run
+    .withSuccessHandler(displayData) // ถ้าหลังบ้านทำงานสำเร็จ ให้ส่งผลลัพธ์ไปที่ฟังก์ชัน displayData
+    .withFailureHandler(displayError)
+    .searchIdCardSpecificColumns(idValue);
+}
+
+// 📦 ฟังก์ชันรับข้อมูลกลับมาจากหลังบ้าน
+function displayData(results) {
+  var resultArea = document.getElementById('resultArea');
+  resultArea.innerHTML = ''; // เคลียร์ข้อความ Loading ออก
+  
+  if (results.length === 0) {
+    resultArea.innerHTML = '<p class="error">❌ ไม่พบข้อมูลเลข 13 หลักนี้ในระบบ</p>';
+    return;
+  }
+  
+  // วนลูปแสดงผลลัพธ์ (รองรับกรณีเจอเลขซ้ำในแท็บอื่น)
+  results.forEach(function(item) {
+    var card = document.createElement('div');
+    card.className = 'result-card';
+    
+    // ดึงค่าที่หลังบ้านแพ็คมา (columnB, columnC, columnG) มาหยอดลง HTML
+    card.innerHTML = '📌 <b>พบในแท็บ:</b> ' + item.sheetName + ' (แถวที่ ' + item.rowNumber + ')<br><hr>' +
+                     '👤 <b>ชื่อ:</b> ' + item.columnB + '<br>' +
+                     '📋 <b>นามสกุล:</b> ' + item.columnC + '<br>' +
+                     '📋 <b>ความผิด:</b> ' + item.columnG + '<br>' +
+                     '📋 <b>อายุความ:</b> ' + item.columnN + '<br>' +
+                     '📞 <b>สถานะ:</b> ' + item.columnO;
+                     
+    resultArea.appendChild(card);
+  });
+}
+
+function displayError(err) {
+  document.getElementById('resultArea').innerHTML = '<p class="error">เกิดข้อผิดพลาด: ' + err.message + '</p>';
+}
 // URL ที่ได้จากการ Deploy Apps Script Web App
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyss_zHh0OcITnBgf86OQCL_TMBbWLuyYkQpI2gyQIzXPYOlW0VLOo5O1i2gs2RC13a/exec";
 
