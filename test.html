@@ -1,121 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-  <base target="_top">
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบค้นหาและบันทึกข้อมูลประชากร</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; background-color: #f0f2f5; }
-    .container { max-width: 500px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-    button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
-    button:hover { background-color: #0056b3; }
-    .result-card { margin-top: 20px; padding: 15px; background: #e9ecef; border-left: 6px solid #28a745; border-radius: 6px; }
-    .error { color: #dc3545; text-align: center; margin-top: 15px; font-weight: bold; }
-    .loading { color: #6c757d; text-align: center; font-style: italic; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 900px; margin: 0 auto; background-color: #f9f9f9; }
+    .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 25px; }
+    .form-group { margin-bottom: 15px; }
+    label { font-weight: bold; display: block; margin-bottom: 5px; }
+    input[type="text"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+    button { padding: 10px 20px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; transition: background 0.2s; }
+    .btn-search { background-color: #008CBA; color: white; width: 100%; }
+    .btn-search:hover { background-color: #007399; }
+    .btn-save { background-color: #4CAF50; color: white; display: none; margin-top: 15px; float: right; }
+    .btn-save:hover { background-color: #45a049; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; display: none; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    .text-center { text-align: center; }
+    .loading { display: none; color: #666; font-style: italic; margin-top: 10px; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>🔍 ระบบตรวจสอบข้อมูล</h2>
-  <p>กรอกเลข 13 หลักเพื่อค้นหาชื่อ-นามสกุล และเบอร์โทรศัพท์</p>
-  
-  <input type="text" id="idCardInput" placeholder="กรอกเลข 13 หลักตรงนี้" maxlength="13">
-  <button onclick="submitSearch()">ค้นหาข้อมูล</button>
+  <div class="card">
+    <h2>🔎 ระบบค้นหาข้อมูลประชากร</h2>
+    <div class="form-group">
+      <label for="idCardInput">กรอกเลขบัตรประจำตัวประชาชน 13 หลัก</label>
+      <input type="text" id="idCardInput" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="ตัวอย่าง: 1100100200300" maxlength="13">
+    </div>
+    <button class="btn-search" onclick="triggerSearch()">ค้นหาข้อมูล</button>
+    <div id="loadingText" class="loading">⏳ กำลังค้นหาข้อมูลจากระบบฐานข้อมูล กรุณารอสักครู่...</div>
+  </div>
 
-  <div id="resultArea"></div>
-</div>
+  <div class="card" id="resultCard" style="display: none; overflow-x: auto;">
+    <h3>📊 ผลการค้นหาที่พบ</h3>
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th class="text-center">เลือก</th>
+          <th>ชื่อ (B)</th>
+          <th>นามสกุล (C)</th>
+          <th>จังหวัด (G)</th>
+          <th>มาจากแท็บ</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        </tbody>
+    </table>
+    <button id="saveBtn" class="btn-save" onclick="triggerSave()">📥 บันทึกข้อมูลที่เลือกไปยังชีทใหม่</button>
+    <div style="clear: both;"></div>
+  </div>
 
-<script>
-  function submitSearch() {
-  var idValue = document.getElementById('idCardInput').value.trim();
-  var resultArea = document.getElementById('resultArea');
-  
-  // ตรวจสอบความถูกต้องหน้าบ้านก่อนส่ง
-  if(idValue.length !== 13 || isNaN(idValue)) {
-    alert('กรุณากรอกตัวเลขให้ครบ 13 หลัก');
-    return;
-  }
-  
-  resultArea.innerHTML = '<p class="loading">⏳ กำลังค้นหาในระบบคลาวด์...</p>';
-  
-  // ✈️ ส่งเลขไปให้หลังบ้านรัน TextFinder
-  google.script.run
-    .withSuccessHandler(displayData) // ถ้าหลังบ้านทำงานสำเร็จ ให้ส่งผลลัพธ์ไปที่ฟังก์ชัน displayData
-    .withFailureHandler(displayError)
-    .searchIdCardSpecificColumns(idValue);
-}
+  <script>
+    // 💡 วาง URL ของ Apps Script Web App ที่ก๊อปปี้มาลงในเครื่องหมายคำพูดด้านล่างนี้
+    const WEB_APP_URL = "วาง_URL_ของ_Web_App_ที่ได้จากการ_Deploy_ที่นี่";
 
-// 📦 ฟังก์ชันรับข้อมูลกลับมาจากหลังบ้าน
-function displayData(results) {
-  var resultArea = document.getElementById('resultArea');
-  resultArea.innerHTML = ''; // เคลียร์ข้อความ Loading ออก
-  
-  if (results.length === 0) {
-    resultArea.innerHTML = '<p class="error">❌ ไม่พบข้อมูลเลข 13 หลักนี้ในระบบ</p>';
-    return;
-  }
-  
-  // วนลูปแสดงผลลัพธ์ (รองรับกรณีเจอเลขซ้ำในแท็บอื่น)
-  results.forEach(function(item) {
-    var card = document.createElement('div');
-    card.className = 'result-card';
-    
-    // ดึงค่าที่หลังบ้านแพ็คมา (columnB, columnC, columnG) มาหยอดลง HTML
-    card.innerHTML = '📌 <b>พบในแท็บ:</b> ' + item.sheetName + ' (แถวที่ ' + item.rowNumber + ')<br><hr>' +
-                     '👤 <b>ชื่อ:</b> ' + item.columnB + '<br>' +
-                     '📋 <b>นามสกุล:</b> ' + item.columnC + '<br>' +
-                     '📋 <b>ความผิด:</b> ' + item.columnG + '<br>' +
-                     '📋 <b>อายุความ:</b> ' + item.columnN + '<br>' +
-                     '📞 <b>สถานะ:</b> ' + item.columnO;
-                     
-    resultArea.appendChild(card);
-  });
-}
+    // 1. ฟังก์ชันส่งคำค้นหาไปยังหลังบ้าน
+    function triggerSearch() {
+      const idCard = document.getElementById('idCardInput').value;
+      const loadingText = document.getElementById('loadingText');
+      const resultCard = document.getElementById('resultCard');
+      const table = document.getElementById('resultTable');
+      const tbody = document.getElementById('tableBody');
+      const saveBtn = document.getElementById('saveBtn');
 
-function displayError(err) {
-  document.getElementById('resultArea').innerHTML = '<p class="error">เกิดข้อผิดพลาด: ' + err.message + '</p>';
-}
-// URL ที่ได้จากการ Deploy Apps Script Web App
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyss_zHh0OcITnBgf86OQCL_TMBbWLuyYkQpI2gyQIzXPYOlW0VLOo5O1i2gs2RC13a/exec";
+      if (idCard.length < 13) {
+        alert('กรุณากรอกเลขบัตรให้ครบ 13 หลักก่อนครับ');
+        return;
+      }
 
-// 🔍 ตอนค้นหาข้อมูล
-function searchData(idCardNumber) {
-  fetch(WEB_APP_URL, {
-    method: "POST",
-    body: JSON.stringify({ action: "search", idCardNumber: idCardNumber })
-  })
-  .then(res => res.json())
-  .then(results => {
-    showResult(results); // เอาผลลัพธ์ไปแสดงในตาราง (เหมือนเดิม)
-  });
-}
+      // แสดงสถานะกำลังโหลด และซ่อนข้อมูลเก่า
+      loadingText.style.display = 'block';
+      resultCard.style.display = 'none';
+      tbody.innerHTML = '';
 
-// 💾 ตอนกดบันทึกข้อมูลที่เลือก
-function saveSelectedData() {
-  var checkboxes = document.querySelectorAll('.row-select');
-  var selectedData = [];
-  checkboxes.forEach(box => {
-    if (box.checked) {
-      selectedData.push(JSON.parse(box.getAttribute('data-info')));
+      // ใช้ Fetch API ส่งคำขอข้ามฝั่งไปยัง Google Apps Script
+      fetch(WEB_APP_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "search", idCardNumber: idCard })
+      })
+      .then(response => response.json())
+      .then(results => {
+        loadingText.style.display = 'none';
+        resultCard.style.display = 'block';
+        table.style.display = 'table';
+
+        if (results.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center">❌ ไม่พบข้อมูลประชากรเลขนี้ในระบบ</td></tr>';
+          saveBtn.style.display = 'none';
+          return;
+        }
+
+        // นำข้อมูลที่เจอมาสร้างตารางข้อมูลพร้อมปุ่ม Checkbox
+        results.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td class="text-center">
+              <input type="checkbox" class="row-select" data-info='${JSON.stringify(item)}'>
+            </td>
+            <td>${item.columnB}</td>
+            <td>${item.columnC}</td>
+            <td>${item.columnG}</td>
+            <td><small>${item.sheetName}</small></td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        saveBtn.style.display = 'block'; // เปิดให้ปุ่มบันทึกทำงาน
+      })
+      .catch(error => {
+        loadingText.style.display = 'none';
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อระบบฐานข้อมูล: ' + error.message);
+      });
     }
-  });
 
-  // ส่งข้อมูลที่เลือกกลับไปบันทึก
-  fetch(WEB_APP_URL, {
-    method: "POST",
-    body: JSON.stringify({ action: "save", selectedData: selectedData })
-  })
-  .then(res => res.json())
-  .then(response => {
-     alert('บันทึกข้อมูลสำเร็จบน GitHub แล้ว!');
-  });
-}
+    // 2. ฟังก์ชันตรวจสอบการเลือกข้อมูลและส่งกลับไปบันทึกที่หลังบ้าน
+    function triggerSave() {
+      const checkboxes = document.querySelectorAll('.row-select');
+      const selectedData = [];
 
-function displayError(err) {
-  document.getElementById('resultArea').innerHTML = '<p class="error">เกิดข้อผิดพลาด: ' + err.message + '</p>';
-}
-</script>
+      // วนดูว่าช่องไหนติ๊กถูกบ้างเพื่อเก็บลง Array
+      checkboxes.forEach(box => {
+        if (box.checked) {
+          const info = JSON.parse(box.getAttribute('data-info'));
+          selectedData.push(info);
+        }
+      });
 
+      if (selectedData.length === 0) {
+        alert('กรุณาติ๊กเลือกช่องสี่เหลี่ยมหน้าแถวข้อมูลที่คุณต้องการบันทึกก่อนครับ');
+        return;
+      }
+
+      if (!confirm(`คุณต้องการบันทึกข้อมูลจำนวน ${selectedData.length} รายการนี้ใช่หรือไม่?`)) return;
+
+      // ส่งคำขอบันทึกข้อมูลกลับไปยังหลังบ้าน
+      fetch(WEB_APP_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "save", selectedData: selectedData })
+      })
+      .then(response => response.json())
+      .then(res => {
+        if (res.status === "success") {
+          alert('🎉 ' + res.message);
+          // ทำการล้างสถานะติ๊กถูกหลังทำสำเร็จ
+          checkboxes.forEach(box => box.checked = false);
+        } else {
+          alert('เกิดปัญหาฝั่งเซิร์ฟเวอร์: ' + res.message);
+        }
+      })
+      .catch(error => {
+        alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + error.message);
+      });
+    }
+  </script>
 </body>
 </html>
