@@ -1,5 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; background-color: #f0f2f5; }
+    .container { max-width: 500px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+    button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+    button:hover { background-color: #0056b3; }
+    .result-card { margin-top: 20px; padding: 15px; background: #e9ecef; border-left: 6px solid #28a745; border-radius: 6px; }
+    .error { color: #dc3545; text-align: center; margin-top: 15px; font-weight: bold; }
+    .loading { color: #6c757d; text-align: center; font-style: italic; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>🔍 ระบบตรวจสอบข้อมูล</h2>
+  <p>กรอกเลข 13 หลักเพื่อค้นหาชื่อ-นามสกุล และเบอร์โทรศัพท์</p>
+  
+  <input type="text" id="idCardInput" placeholder="กรอกเลข 13 หลักตรงนี้" maxlength="13">
+  <button onclick="submitSearch()">ค้นหาข้อมูล</button>
+
+  <div id="resultArea"></div>
+</div>
+
+<script>
 // URL ที่ได้จากการ Deploy Apps Script Web App
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyss_zHh0OcITnBgf86OQCL_TMBbWLuyYkQpI2gyQIzXPYOlW0VLOo5O1i2gs2RC13a/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/XXXXX/exec";
 
 // 🔍 ตอนค้นหาข้อมูล
 function searchData(idCardNumber) {
@@ -33,3 +62,11 @@ function saveSelectedData() {
      alert('บันทึกข้อมูลสำเร็จบน GitHub แล้ว!');
   });
 }
+
+function displayError(err) {
+  document.getElementById('resultArea').innerHTML = '<p class="error">เกิดข้อผิดพลาด: ' + err.message + '</p>';
+}
+</script>
+
+</body>
+</html>
