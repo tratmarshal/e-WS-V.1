@@ -939,8 +939,8 @@ document.addEventListener('touchend', function(e) {
   var indicator = document.getElementById('pullIndicator');
   if (indicator.classList.contains('show')) {
     indicator.innerHTML = '<span class="spinner-small"></span> กำลังรีโหลดข้อมูล...';
-    setTimeout(function() {
-      loadDashboard();
+    setTimeout(async function() {
+      await loadDashboard();
       indicator.classList.remove('show');
       indicator.innerHTML = '<span class="spinner-small"></span> ปล่อยเพื่อรีโหลด...';
       showToast('รีเฟรชข้อมูลสำเร็จ');
@@ -981,6 +981,7 @@ function closeFormModal() {
   document.getElementById('warrantForm').reset();
   document.getElementById('searchLoading').classList.remove('show');
   currentSearchedDefendant = null;
+  toggleReasonField(); // รีเซ็ตฟิลด์เหตุให้กลับเป็นค่าเริ่มต้น
 }
 
 // =============================================================
@@ -1184,7 +1185,8 @@ function showToast(text) {
 // =============================================================
 // Init
 // =============================================================
-loadDashboard();
+showLoading(true);
+loadDashboard().finally(function() { showLoading(false); });
 </script>
 </body>
 </html>
