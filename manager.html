@@ -1,3 +1,5 @@
+<!-- ค้นหาไฟล์ manager.html แล้วแทนที่ส่วนที่กำหนดดังนี้ -->
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -676,10 +678,13 @@ async function searchWarrants() {
     var listDiv = document.getElementById('warrantsCheckboxList');
     listDiv.innerHTML = '';
     warrants.forEach(function(w, idx) {
-      var canSelect = (w.status === 'ต้องการตัว' || w.status === '');
+      // 1. ตรวจสอบสถานะ: ถ้า O (status) เป็นค่าว่าง หรือเป็น "ต้องการตัว" จึงจะสามารถเลือก Checkbox ได้
+      var statusValue = (w.status || "").trim();
+      var canSelect = (statusValue === '' || statusValue === 'ต้องการตัว');
+      
       var div = document.createElement('div');
       div.className = "checkbox-item" + (canSelect ? "" : " disabled");
-      div.innerHTML = '<input type="checkbox" id="chk-' + idx + '" value="' + esc(w.warrantNumber) + '" data-detail="' + esc(w.charge) + '" ' + (canSelect ? 'checked' : '') + ' ' + (canSelect ? '' : 'disabled') + '><label for="chk-' + idx + '" style="' + (canSelect ? '' : 'cursor:not-allowed;') + '"><span class="warrant-no"><span>' + esc(w.warrantNumber) + '</span>' + (w.status ? '<span class="warrant-status-tag">' + esc(w.status) + '</span>' : '') + '</span><span class="warrant-detail">' + esc(w.charge) + '</span></label>';
+      div.innerHTML = '<input type="checkbox" id="chk-' + idx + '" value="' + esc(w.warrantNumber) + '" data-detail="' + esc(w.charge) + '" ' + (canSelect ? 'checked' : '') + ' ' + (canSelect ? '' : 'disabled') + '><label for="chk-' + idx + '" style="' + (canSelect ? '' : 'cursor:not-allowed;') + '"><span class="warrant-no"><span>' + esc(w.warrantNumber) + '</span>' + (statusValue ? '<span class="warrant-status-tag">' + esc(statusValue) + '</span>' : '') + '</span><span class="warrant-detail">' + esc(w.charge) + '</span></label>';
       listDiv.appendChild(div);
     });
     document.getElementById('searchResultsSection').classList.remove('hidden');
