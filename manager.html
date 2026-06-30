@@ -48,8 +48,30 @@
     }
 
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     .hidden { display: none !important; }
+
+    /* ========== Loading Overlay ========== */
+    .loading-overlay {
+      position: fixed; inset: 0;
+      background: rgba(5, 11, 20, 0.85);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 200;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .loading-overlay.show { opacity: 1; pointer-events: auto; }
+    .loading-overlay .spinner-lg {
+      width: 44px; height: 44px;
+      border: 4px solid #1e293b;
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+    .loading-overlay p { color: var(--text-muted); font-size: 14px; font-weight: 600; }
 
     /* ========== Header / Banner ========== */
     .banner {
@@ -172,8 +194,8 @@
 
     table { width: 100%; border-collapse: collapse; }
     table th {
-      padding: 12px 16px;
-      font-size: 11px;
+      padding: 8px 12px;
+      font-size: 10px;
       font-weight: 700;
       color: var(--text-muted);
       background: var(--surface-bg);
@@ -184,8 +206,8 @@
       text-align: center;
     }
     table td {
-      padding: 14px 16px;
-      font-size: 13px;
+      padding: 10px 12px;
+      font-size: 12px;
       font-weight: 500;
       color: var(--text-main);
       border-bottom: 1px solid var(--border-color);
@@ -199,25 +221,25 @@
 
     /* ========== Warrant Info (col 1) ========== */
     .warrant-line {
-      font-weight: 700; color: #ffffff; font-family: monospace; font-size: 13px;
+      font-weight: 700; color: #ffffff; font-family: monospace; font-size: 12px;
       display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
     }
-    .warrant-line .warrant-no { font-size: 14px; }
+    .warrant-line .warrant-no { font-size: 13px; }
     .warrant-status-tag {
-      font-size: 10px; font-weight: 600; padding: 1px 8px; border-radius: 999px;
+      font-size: 9px; font-weight: 600; padding: 1px 6px; border-radius: 999px;
       white-space: nowrap;
     }
     .warrant-status-tag.red { color: #f87171; background: #450a0a; border: 1px solid #7f1d1d; }
     .warrant-status-tag.gray { color: #64748b; background: #1e293b; border: 1px solid #334155; }
-    .defendant-line { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .defendant-line { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
 
     /* ========== Badges ========== */
     .badge {
       display: inline-flex;
       align-items: center;
-      padding: 3px 10px;
+      padding: 2px 8px;
       border-radius: 999px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.3px;
       white-space: nowrap;
@@ -237,10 +259,10 @@
 
     /* ========== Action Buttons ========== */
     .btn-action {
-      padding: 6px 14px;
+      padding: 4px 10px;
       border: none;
       border-radius: 8px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       cursor: pointer;
       transition: var(--transition);
@@ -282,7 +304,6 @@
       vertical-align: middle;
       margin-right: 8px;
     }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     /* ========== Modals ========== */
     .modal-overlay {
@@ -294,10 +315,15 @@
       align-items: center;
       justify-content: center;
       padding: 16px;
-      z-index: 50;
-      transition: opacity 0.3s;
+      z-index: 150;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
-    .modal-overlay.hidden { opacity: 0; pointer-events: none; }
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
     .modal-card {
       background: var(--card-bg);
@@ -310,7 +336,13 @@
       display: flex;
       flex-direction: column;
       box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      transform: translateY(24px) scale(0.97);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
+    .modal-overlay.show .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
     .modal-head {
       background: linear-gradient(135deg, #0f172a 0%, #0b1220 100%);
       border-bottom: 1px solid var(--border-color);
@@ -343,12 +375,11 @@
       display: flex; align-items: center; justify-content: center;
     }
     .confirm-icon.warn { background: #422006; color: #fde68a; }
-    .confirm-icon.info { background: #172554; color: #93c5fd; }
     .confirm-title { font-size: 16px; font-weight: 700; color: #ffffff; text-align: center; margin-bottom: 8px; }
     .confirm-desc { font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.5; margin-bottom: 20px; }
 
     /* ========== Form Elements ========== */
-    .form-group { margin-bottom: 16px; }
+    .form-group { margin-bottom: 14px; }
     .form-label {
       display: block; font-size: 11px; font-weight: 700; color: var(--text-muted);
       text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
@@ -356,7 +387,7 @@
     .form-label .required { color: #f87171; }
 
     .form-input, .form-select {
-      width: 100%; padding: 12px 16px; font-size: 14px; font-family: inherit;
+      width: 100%; padding: 10px 14px; font-size: 13px; font-family: inherit;
       background: #0b1220; border: 1px solid #334155; border-radius: var(--radius-sm);
       color: #ffffff; transition: var(--transition);
     }
@@ -368,6 +399,7 @@
       background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
     }
     .form-select option { background: #0f172a; color: #ffffff; }
+    .form-input-sm { width: 100%; padding: 8px 12px; font-size: 12px; }
 
     .search-box {
       background: #0b1220; border: 1px solid #334155; border-radius: var(--radius-sm); padding: 12px 16px;
@@ -376,7 +408,7 @@
       font-size: 11px; font-weight: 700; color: var(--text-muted);
       text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
     }
-    .search-box-row { display: flex; gap: 8px; }
+    .search-box-row { display: flex; gap: 8px; align-items: center; }
     .search-box-row input {
       flex: 1; padding: 10px 14px; font-size: 14px; font-family: inherit;
       background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px;
@@ -391,6 +423,21 @@
       font-family: inherit; display: flex; align-items: center; gap: 6px; white-space: nowrap;
     }
     .search-box-btn:hover { background: var(--border-color); }
+    .search-box-btn:disabled { opacity: 0.5; pointer-events: none; }
+
+    /* Search loading spinner */
+    .search-loading {
+      display: none; align-items: center; justify-content: center;
+      padding: 24px; color: var(--text-muted); font-size: 13px; gap: 10px;
+    }
+    .search-loading.show { display: flex; }
+    .search-loading .spinner-s {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border-color);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
 
     .checkbox-list {
       max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
@@ -399,32 +446,43 @@
     .checkbox-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 
     .checkbox-item {
-      display: flex; align-items: flex-start; gap: 10px; padding: 10px;
+      display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px;
       background: #0b1220; border: 1px solid #1e293b; border-radius: 8px; transition: background 0.15s;
     }
     .checkbox-item:hover { background: var(--surface-bg); }
     .checkbox-item.disabled { opacity: 0.5; }
-    .checkbox-item input[type="checkbox"] { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--primary-color); }
+    .checkbox-item input[type="checkbox"] { margin-top: 2px; width: 14px; height: 14px; accent-color: var(--primary-color); }
     .checkbox-item label { font-size: 12px; cursor: pointer; flex: 1; user-select: none; }
     .checkbox-item label .warrant-no { font-weight: 700; color: #ffffff; display: flex; justify-content: space-between; }
     .checkbox-item label .warrant-detail { display: block; color: var(--text-muted); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .checkbox-item label .warrant-status-tag { font-size: 10px; color: #f59e0b; background: #451a03; padding: 1px 8px; border-radius: 999px; font-weight: 600; }
 
-    .reason-detail-box { margin-left: 16px; padding-left: 16px; border-left: 2px solid #f59e0b; }
+    .reason-detail-box { margin-left: 16px; padding-left: 16px; border-left: 2px solid #f59e0b; margin-top: -6px; margin-bottom: 14px; }
+    .reason-detail-box .form-group { margin-bottom: 10px; }
 
     .btn-primary {
-      width: 100%; padding: 14px; background: var(--primary-color); color: #ffffff;
-      border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 700;
+      width: 100%; padding: 10px 14px; background: var(--primary-color); color: #ffffff;
+      border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 700;
       cursor: pointer; transition: var(--transition); font-family: inherit;
       display: flex; align-items: center; justify-content: center; gap: 8px;
     }
     .btn-primary:hover { background: #1d4ed8; }
     .btn-primary:active { transform: scale(0.99); }
+    .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
+
+    .btn-primary .spinner-btn {
+      display: none; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    .btn-primary.loading .spinner-btn { display: inline-block; }
+    .btn-primary.loading .btn-text { display: none; }
 
     .btn-secondary {
-      padding: 12px 20px; background: var(--surface-bg); color: var(--text-muted);
+      padding: 10px 16px; background: var(--surface-bg); color: var(--text-muted);
       border: 1px solid var(--border-color); border-radius: var(--radius-sm);
-      font-size: 13px; font-weight: 700; cursor: pointer; transition: var(--transition);
+      font-size: 12px; font-weight: 700; cursor: pointer; transition: var(--transition);
       font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px;
     }
     .btn-secondary:hover { background: var(--border-color); color: var(--text-main); }
@@ -441,14 +499,14 @@
     .warrant-badge-sm .det { font-size: 10px; color: var(--text-dark); display: block; }
 
     .toast {
-      position: fixed; bottom: 20px; right: 20px;
+      position: fixed; bottom: 24px; right: 24px;
       background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-sm);
       padding: 14px 20px; display: flex; align-items: center; gap: 10px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 200;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 250;
       transition: all 0.3s; transform: translateY(20px); opacity: 0; pointer-events: none;
     }
     .toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
-    .toast-icon { width: 20px; height: 20px; background: #065f46; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #34d399; }
+    .toast-icon { width: 20px; height: 20px; background: #065f46; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #34d399; flex-shrink: 0; }
     .toast-icon svg { width: 12px; height: 12px; }
     .toast-text { font-size: 13px; font-weight: 600; color: var(--text-main); }
 
@@ -458,12 +516,18 @@
       .banner-right { flex-wrap: wrap; }
       .modal-card { max-width: 100%; margin: 0 8px; }
       .modal-body { padding: 16px; }
-      table th, table td { padding: 10px 8px; font-size: 12px; }
+      table th, table td { padding: 8px 6px; font-size: 11px; }
       .banner-title { font-size: 18px; }
     }
   </style>
 </head>
 <body>
+
+<!-- ==================== LOADING OVERLAY ==================== -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="spinner-lg"></div>
+  <p>กำลังประมวลผล กรุณารอสักครู่...</p>
+</div>
 
 <div class="container">
 
@@ -534,7 +598,7 @@
 </div>
 
 <!-- ==================== FORM MODAL ==================== -->
-<div id="formModal" class="modal-overlay hidden">
+<div id="formModal" class="modal-overlay">
   <div class="modal-card">
     <div class="modal-head">
       <div class="modal-head-left">
@@ -543,14 +607,18 @@
         </svg>
         <span>บันทึกเสนอรายงานสิ้นผลหมายจับ</span>
       </div>
-      <button type="button" onclick="closeFormModal()" class="modal-close"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      <button type="button" onclick="closeModal('formModal')" class="modal-close"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-body">
       <div class="search-box">
         <div class="search-box-label">1. ค้นหาหมายจับค้างเก่า <span style="color:#f87171;">*</span></div>
         <div class="search-box-row">
           <input type="text" id="searchQuery" placeholder="กรอกชื่อจำเลย หรือเลขบัตร 13 หลัก">
-          <button type="button" onclick="searchWarrants()" class="search-box-btn"><i class="fas fa-search" style="font-size:12px;"></i> ค้นหา</button>
+          <button type="button" onclick="searchWarrants()" id="searchBtn" class="search-box-btn"><i class="fas fa-search" style="font-size:12px;"></i> ค้นหา</button>
+        </div>
+        <div class="search-loading" id="searchLoading">
+          <div class="spinner-s"></div>
+          <span>กำลังค้นหา...</span>
         </div>
       </div>
       <div id="searchResultsSection" class="hidden" style="margin-top:16px;">
@@ -562,21 +630,22 @@
         <form id="warrantForm" onsubmit="handleFormSubmit(event)" class="hidden" style="margin-top:16px;">
           <div class="form-group">
             <label class="form-label">2. เหตุที่ทำให้หมายจับสิ้นผล <span class="required">*</span></label>
-            <select id="endReason" required onchange="toggleReasonDetail()" class="form-select">
-              <option value="" disabled selected>-- เลือกเหตุผลของคดี --</option>
-              <option value="จำเลยมาศาลตามนัด">จำเลยมาศาลตามนัด</option>
-              <option value="จำเลยมาศาลและศาลอนุญาตให้ปล่อยชั่วคราว">จำเลยมาศาลและศาลอนุญาตให้ปล่อยชั่วคราว</option>
-              <option value="จับตัวจำเลยได้">จับตัวจำเลยได้</option>
-              <option value="อายัดตัวจำเลยได้">อายัดตัวจำเลยได้</option>
-              <option value="จับผู้ต้องหาได้">จับผู้ต้องหาได้</option>
-              <option value="ถอนหมายจับ">ถอนหมายจับ</option>
-              <option value="ถอนฟ้อง/ถอนคำร้องทุกข์">ถอนฟ้อง/ถอนคำร้องทุกข์</option>
+            <select id="endReason" required onchange="toggleReasonField()" class="form-select">
+              <option value="" disabled selected>-- เลือกเหตุผล --</option>
+              <option value="ส่งตัว">ส่งตัว</option>
+              <option value="มอบตัว">มอบตัว</option>
               <option value="ขาดอายุความ">ขาดอายุความ</option>
-              <option value="จำเลยเสียชีวิต">จำเลยเสียชีวิต</option>
-              <option value="คดีถึงที่สุด">คดีถึงที่สุด</option>
-              <option value="อื่น ๆ">อื่น ๆ (ระบุรายละเอียด)</option>
+              <option value="อื่น ๆ">อื่น ๆ</option>
             </select>
           </div>
+          <!-- Arrest Team (เมื่อเลือก "ส่งตัว") -->
+          <div id="arrestTeamContainer" class="reason-detail-box hidden">
+            <div class="form-group">
+              <label class="form-label">ชุดจับ <span class="required">*</span></label>
+              <input type="text" id="arrestTeam" class="form-input" placeholder="ระบุชื่อชุด/หน่วยที่จับ">
+            </div>
+          </div>
+          <!-- Reason Detail (เมื่อเลือก "อื่น ๆ") -->
           <div id="reasonDetailContainer" class="reason-detail-box hidden">
             <div class="form-group">
               <label class="form-label">โปรดระบุรายละเอียด <span class="required">*</span></label>
@@ -592,8 +661,11 @@
               <option value="ท่านผู้พิพากษา ประสิทธิ์ ยุติธรรมดี">ท่านผู้พิพากษา ประสิทธิ์ ยุติธรรมดี</option>
             </select>
           </div>
-          <div style="border-top:1px solid var(--border-color); padding-top:16px;">
-            <button type="submit" class="btn-primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span>ตรวจสอบและบันทึก</span></button>
+          <div style="border-top:1px solid var(--border-color); padding-top:14px;">
+            <button type="submit" id="formSubmitBtn" class="btn-primary">
+              <span class="spinner-btn"></span>
+              <span class="btn-text"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> ตรวจสอบและบันทึก</span>
+            </button>
           </div>
         </form>
       </div>
@@ -602,7 +674,7 @@
 </div>
 
 <!-- ==================== CONFIRM SAVE MODAL ==================== -->
-<div id="confirmModal" class="modal-overlay hidden">
+<div id="confirmModal" class="modal-overlay">
   <div class="modal-card" style="max-width:460px;">
     <div class="modal-head" style="background:#422006; border-color:#78350f;">
       <div class="modal-head-left">
@@ -634,14 +706,17 @@
       </div>
     </div>
     <div class="modal-foot">
-      <button type="button" onclick="closeConfirmModal(false)" class="btn-secondary" style="font-size:12px;"><i class="fas fa-edit"></i> ย้อนกลับไปแก้ไข</button>
-      <button type="button" onclick="closeConfirmModal(true)" class="btn-primary" style="font-size:12px; padding:12px;"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> ยืนยันบันทึกข้อมูล</button>
+      <button type="button" onclick="closeModal('confirmModal')" class="btn-secondary" style="font-size:11px;"><i class="fas fa-edit"></i> ย้อนกลับไปแก้ไข</button>
+      <button type="button" onclick="doConfirmSave()" id="confirmSaveBtn" class="btn-primary" style="font-size:11px; padding:8px 12px;">
+        <span class="spinner-btn"></span>
+        <span class="btn-text"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> ยืนยันบันทึกข้อมูล</span>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- ==================== CONFIRM ACTION MODAL ==================== -->
-<div id="actionConfirmModal" class="modal-overlay hidden">
+<div id="actionConfirmModal" class="modal-overlay">
   <div class="modal-card" style="max-width:400px;">
     <div class="modal-body" style="text-align:center;">
       <div class="confirm-icon warn" id="actionConfirmIcon">
@@ -651,8 +726,11 @@
       <div class="confirm-desc" id="actionConfirmDesc">โปรดตรวจสอบความถูกต้องก่อนยืนยัน</div>
     </div>
     <div class="modal-foot">
-      <button type="button" onclick="closeActionConfirm(false)" class="btn-secondary" style="font-size:12px;">ยกเลิก</button>
-      <button type="button" onclick="closeActionConfirm(true)" class="btn-primary" id="actionConfirmBtn" style="font-size:12px; padding:12px;">ยืนยัน</button>
+      <button type="button" onclick="closeActionConfirm(false)" class="btn-secondary" style="font-size:11px;">ยกเลิก</button>
+      <button type="button" onclick="closeActionConfirm(true)" class="btn-primary" id="actionConfirmBtn" style="font-size:11px; padding:8px 12px;">
+        <span class="spinner-btn"></span>
+        <span class="btn-text">ยืนยัน</span>
+      </button>
     </div>
   </div>
 </div>
@@ -660,7 +738,7 @@
 <!-- ==================== TOAST ==================== -->
 <div id="toast" class="toast">
   <div class="toast-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div>
-  <span class="toast-text" id="toastText">บันทึกข้อมูลสำเร็จ</span>
+  <span class="toast-text" id="toastText">สำเร็จ</span>
 </div>
 
 <script>
@@ -674,27 +752,47 @@ var currentTab = 'active';
 var currentSearchedDefendant = null;
 var pendingActionCallback = null;
 var pendingDataToSave = null;
+var isProcessing = false;
 
 // =============================================================
 // API Gateway
 // =============================================================
 async function callGas(fn, payload) {
-  try {
-    var res = await fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ fn: fn, payload: payload || {} })
-    });
-    var json = await res.json();
-    if (json && json.success === false) {
-      throw new Error(json.error || "ระบบปฏิเสธคำขอ");
-    }
-    return json;
-  } catch (err) {
-    console.error('callGas error:', err);
-    throw err;
+  var res = await fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ fn: fn, payload: payload || {} })
+  });
+  var json = await res.json();
+  if (json && json.success === false) {
+    throw new Error(json.error || "ระบบปฏิเสธคำขอ");
   }
+  return json;
 }
+
+// =============================================================
+// Loading
+// =============================================================
+function showLoading(show) {
+  var el = document.getElementById('loadingOverlay');
+  if (show) el.classList.add('show');
+  else el.classList.remove('show');
+}
+
+// =============================================================
+// Modal Open / Close (with animation)
+// =============================================================
+function openModal(id) {
+  var el = document.getElementById(id);
+  el.classList.remove('hidden');
+  el.classList.add('show');
+}
+function closeModal(id) {
+  var el = document.getElementById(id);
+  el.classList.remove('show');
+  el.classList.add('hidden');
+}
+function openConfirmModal() { openModal('confirmModal'); }
 
 // =============================================================
 // Load Dashboard
@@ -727,14 +825,12 @@ function renderDashboard() {
   var tableCard = document.getElementById('tableCard');
   var emptyState = document.getElementById('emptyState');
 
-  // Count by tab
   var countActive = masterItems.filter(function(i) { return i.caseStatus === 'เสนอศาล'; }).length;
   var countPending = masterItems.filter(function(i) { return i.caseStatus === 'รอส่งต่อสำนวน' || i.caseStatus === 'รายงานแล้ว'; }).length;
 
   document.getElementById('countActive').innerText = countActive;
   document.getElementById('countPending').innerText = countPending;
 
-  // Filter by current tab
   var filtered = [];
   if (currentTab === 'active') {
     filtered = masterItems.filter(function(i) { return i.caseStatus === 'เสนอศาล'; });
@@ -742,7 +838,6 @@ function renderDashboard() {
     filtered = masterItems.filter(function(i) { return i.caseStatus === 'รอส่งต่อสำนวน' || i.caseStatus === 'ส่งต่อสำเร็จแล้ว' || i.caseStatus === 'รายงานแล้ว'; });
   }
 
-  // If active tab has 0 items, hide entire dashboard
   if (countActive === 0 && currentTab === 'active') {
     tableCard.classList.add('hidden-table');
     return;
@@ -760,16 +855,12 @@ function renderDashboard() {
 
   filtered.forEach(function(item) {
     var tr = document.createElement('tr');
-
-    // Warrant status color
     var wColor = '';
     if (item.warrantStatus === 'รอเพิกถอน') wColor = 'red';
     else if (item.warrantStatus === 'เพิกถอน') wColor = 'gray';
 
-    // Check if done
     var isDone = item.caseStatus === 'ส่งต่อสำเร็จแล้ว';
     var doneMark = isDone ? ' ✓' : '';
-
     var caseBadge = badgeHtml(item.caseStatus);
 
     var actionHtml = '';
@@ -778,11 +869,10 @@ function renderDashboard() {
     } else if (currentTab === 'active') {
       var revokeBtn = document.createElement('button');
       revokeBtn.className = 'btn-action amber';
-      revokeBtn.innerText = 'เพิกถอนหมายจับ';
+      revokeBtn.innerText = 'เพิกถอน';
       revokeBtn.onclick = function() { showActionConfirm('เพิกถอนหมายจับ', 'ยืนยันว่าศาลได้ลงนามเพิกถอนหมายจับนี้เรียบร้อยแล้ว?', function() { actionRevoke(item.rowId); }); };
       actionHtml = revokeBtn.outerHTML;
     } else {
-      // รอส่งต่อ
       var fwdBtn = document.createElement('button');
       fwdBtn.className = 'btn-action green';
       fwdBtn.innerText = 'ส่งต่อ';
@@ -803,11 +893,7 @@ function renderDashboard() {
       '<td style="text-align:center;">' + caseBadge + '</td>' +
       '<td style="text-align:right; white-space:nowrap;">' + actionHtml + '</td>';
 
-    // If done, dim the row
-    if (isDone) {
-      tr.style.opacity = '0.5';
-    }
-
+    if (isDone) tr.style.opacity = '0.5';
     list.appendChild(tr);
   });
 }
@@ -826,7 +912,6 @@ function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g,
 // Pull to Refresh
 // =============================================================
 var pullStartY = 0;
-var pullThreshold = 80;
 var pulling = false;
 
 document.addEventListener('touchstart', function(e) {
@@ -839,8 +924,7 @@ document.addEventListener('touchstart', function(e) {
 
 document.addEventListener('touchmove', function(e) {
   if (!pulling) return;
-  var currentY = e.touches[0].clientY;
-  var diff = currentY - pullStartY;
+  var diff = e.touches[0].clientY - pullStartY;
   if (diff > 50) {
     document.getElementById('pullIndicator').classList.add('show');
     document.getElementById('pullIndicator').innerHTML = '<span class="spinner-small"></span> ปล่อยเพื่อรีโหลด...';
@@ -859,6 +943,7 @@ document.addEventListener('touchend', function(e) {
       loadDashboard();
       indicator.classList.remove('show');
       indicator.innerHTML = '<span class="spinner-small"></span> ปล่อยเพื่อรีโหลด...';
+      showToast('รีเฟรชข้อมูลสำเร็จ');
     }, 300);
   }
 }, { passive: true });
@@ -870,11 +955,11 @@ function showActionConfirm(title, desc, callback) {
   document.getElementById('actionConfirmTitle').innerText = title;
   document.getElementById('actionConfirmDesc').innerText = desc;
   pendingActionCallback = callback;
-  document.getElementById('actionConfirmModal').classList.remove('hidden');
+  openModal('actionConfirmModal');
 }
 
 function closeActionConfirm(confirmed) {
-  document.getElementById('actionConfirmModal').classList.add('hidden');
+  closeModal('actionConfirmModal');
   if (confirmed && pendingActionCallback) {
     pendingActionCallback();
     pendingActionCallback = null;
@@ -884,41 +969,60 @@ function closeActionConfirm(confirmed) {
 // =============================================================
 // Modal Controls
 // =============================================================
-function openFormModal() { document.getElementById('formModal').classList.remove('hidden'); }
+function openFormModal() {
+  openModal('formModal');
+}
+
 function closeFormModal() {
-  document.getElementById('formModal').classList.add('hidden');
+  closeModal('formModal');
   document.getElementById('searchQuery').value = '';
   document.getElementById('searchResultsSection').classList.add('hidden');
   document.getElementById('warrantForm').classList.add('hidden');
   document.getElementById('warrantForm').reset();
+  document.getElementById('searchLoading').classList.remove('show');
   currentSearchedDefendant = null;
-}
-function openConfirmModal() { document.getElementById('confirmModal').classList.remove('hidden'); }
-function closeConfirmModal(confirmed) {
-  document.getElementById('confirmModal').classList.add('hidden');
-  if (confirmed && pendingDataToSave) {
-    saveProcessRecord(pendingDataToSave);
-  }
 }
 
 // =============================================================
 // Form Logic
 // =============================================================
-function toggleReasonDetail() {
-  var sel = document.getElementById('endReason');
-  var container = document.getElementById('reasonDetailContainer');
-  if (sel.value === 'อื่น ๆ') { container.classList.remove('hidden'); }
-  else { container.classList.add('hidden'); document.getElementById('reasonDetail').value = ''; }
+function toggleReasonField() {
+  var sel = document.getElementById('endReason').value;
+  var arrestContainer = document.getElementById('arrestTeamContainer');
+  var detailContainer = document.getElementById('reasonDetailContainer');
+  var arrestInput = document.getElementById('arrestTeam');
+  var detailInput = document.getElementById('reasonDetail');
+
+  arrestContainer.classList.add('hidden');
+  detailContainer.classList.add('hidden');
+  arrestInput.required = false;
+  detailInput.required = false;
+
+  if (sel === 'ส่งตัว') {
+    arrestContainer.classList.remove('hidden');
+    arrestInput.required = true;
+  } else if (sel === 'อื่น ๆ') {
+    detailContainer.classList.remove('hidden');
+    detailInput.required = true;
+  }
 }
 
 async function searchWarrants() {
   var query = document.getElementById('searchQuery').value.trim();
   if (!query) { showToast('กรุณากรอกข้อมูลค้นหาก่อน'); return; }
 
+  var searchBtn = document.getElementById('searchBtn');
+  var searchLoading = document.getElementById('searchLoading');
+  searchBtn.disabled = true;
+  searchLoading.classList.add('show');
+
   try {
     var searchType = /^\d{13}$/.test(query) ? "id13" : "name";
     var result = await callGas("searchDB", { keyword: query, searchType: searchType });
     var warrants = result.data || [];
+
+    searchLoading.classList.remove('show');
+    searchBtn.disabled = false;
 
     if (warrants.length === 0) {
       alert("ไม่พบข้อมูลหมายจับในระบบ");
@@ -932,22 +1036,28 @@ async function searchWarrants() {
     var listDiv = document.getElementById('warrantsCheckboxList');
     listDiv.innerHTML = '';
     warrants.forEach(function(w, idx) {
-      var isRevoked = w.status === 'เพิกถอน' || w.status === 'สิ้นผลรอเพิกถอน';
+      // เลือกได้เฉพาะ "ต้องการตัว" หรือ status ว่าง
+      var canSelect = (w.status === 'ต้องการตัว' || w.status === '');
       var div = document.createElement('div');
-      div.className = "checkbox-item" + (isRevoked ? " disabled" : "");
-      div.innerHTML = '<input type="checkbox" id="chk-' + idx + '" value="' + esc(w.warrantNumber) + '" data-detail="' + esc(w.charge) + '" ' + (isRevoked ? '' : 'checked') + ' ' + (isRevoked ? 'disabled' : '') + '><label for="chk-' + idx + '" style="' + (isRevoked ? 'cursor:not-allowed;' : '') + '"><span class="warrant-no"><span>' + esc(w.warrantNumber) + '</span>' + (w.status ? '<span class="warrant-status-tag">' + esc(w.status) + '</span>' : '') + '</span><span class="warrant-detail">' + esc(w.charge) + '</span></label>';
+      div.className = "checkbox-item" + (canSelect ? "" : " disabled");
+      div.innerHTML = '<input type="checkbox" id="chk-' + idx + '" value="' + esc(w.warrantNumber) + '" data-detail="' + esc(w.charge) + '" ' + (canSelect ? 'checked' : '') + ' ' + (canSelect ? '' : 'disabled') + '><label for="chk-' + idx + '" style="' + (canSelect ? '' : 'cursor:not-allowed;') + '"><span class="warrant-no"><span>' + esc(w.warrantNumber) + '</span>' + (w.status ? '<span class="warrant-status-tag">' + esc(w.status) + '</span>' : '') + '</span><span class="warrant-detail">' + esc(w.charge) + '</span></label>';
       listDiv.appendChild(div);
     });
 
     document.getElementById('searchResultsSection').classList.remove('hidden');
     document.getElementById('warrantForm').classList.remove('hidden');
   } catch (err) {
+    searchLoading.classList.remove('show');
+    searchBtn.disabled = false;
     showToast("การค้นหาล้มเหลว: " + (err.message || "กรุณาลองใหม่"));
   }
 }
 
 function handleFormSubmit(e) {
   e.preventDefault();
+
+  if (isProcessing) return;
+
   var selected = [];
   if (currentSearchedDefendant) {
     currentSearchedDefendant.warrants.forEach(function(w, idx) {
@@ -956,17 +1066,22 @@ function handleFormSubmit(e) {
     });
   }
   if (selected.length === 0) { alert('กรุณาเลือกหมายจับอย่างน้อย 1 รายการ'); return; }
+
   var reason = document.getElementById('endReason').value;
   var proposed = document.getElementById('proposedTo').value;
   if (!reason) { alert('กรุณาเลือกเหตุ'); return; }
   if (!proposed) { alert('กรุณาเลือกผู้พิพากษา'); return; }
+
+  var arrestTeam = document.getElementById('arrestTeam').value;
+  var reasonDetail = document.getElementById('reasonDetail').value;
   var caseStatus = 'เสนอศาล';
 
   pendingDataToSave = {
     defendantName: currentSearchedDefendant.defendantName,
     selectedWarrants: selected,
     endReason: reason,
-    reasonDetail: document.getElementById('reasonDetail').value,
+    reasonDetail: (reason === 'อื่น ๆ') ? reasonDetail : (reason === 'ส่งตัว' ? arrestTeam : ''),
+    arrestTeam: (reason === 'ส่งตัว') ? arrestTeam : '',
     proposedTo: proposed
   };
 
@@ -980,7 +1095,17 @@ function handleFormSubmit(e) {
   openConfirmModal();
 }
 
+function doConfirmSave() {
+  if (isProcessing || !pendingDataToSave) return;
+  closeModal('confirmModal');
+  saveProcessRecord(pendingDataToSave);
+}
+
 async function saveProcessRecord(data) {
+  if (isProcessing) return;
+  isProcessing = true;
+  showLoading(true);
+
   try {
     var result = await callGas("saveDB", { action: "addProcess", data: data });
     showToast('บันทึกรายการ ' + (result.count || data.selectedWarrants.length) + ' รายการสำเร็จ');
@@ -989,6 +1114,9 @@ async function saveProcessRecord(data) {
     setTimeout(function() { loadDashboard(); }, 200);
   } catch (err) {
     showToast("บันทึกล้มเหลว: " + (err.message || "กรุณาลองใหม่"));
+  } finally {
+    isProcessing = false;
+    showLoading(false);
   }
 }
 
@@ -996,32 +1124,50 @@ async function saveProcessRecord(data) {
 // Action Buttons
 // =============================================================
 async function actionRevoke(rowId) {
+  if (isProcessing) return;
+  isProcessing = true;
+  showLoading(true);
   try {
     await callGas("saveDB", { action: "markRevoked", data: { rowId: rowId } });
     showToast('อัปเดตสถานะเป็น เพิกถอน สำเร็จ');
     loadDashboard();
   } catch (err) {
     showToast("เกิดข้อผิดพลาด: " + (err.message || "กรุณาลองใหม่"));
+  } finally {
+    isProcessing = false;
+    showLoading(false);
   }
 }
 
 async function actionForward(rowId) {
+  if (isProcessing) return;
+  isProcessing = true;
+  showLoading(true);
   try {
     await callGas("saveDB", { action: "markForwarded", data: { rowId: rowId } });
     showToast('ส่งต่อสำนวนสำเร็จ');
     loadDashboard();
   } catch (err) {
     showToast("เกิดข้อผิดพลาด: " + (err.message || "กรุณาลองใหม่"));
+  } finally {
+    isProcessing = false;
+    showLoading(false);
   }
 }
 
 async function actionReport(rowId) {
+  if (isProcessing) return;
+  isProcessing = true;
+  showLoading(true);
   try {
     await callGas("saveDB", { action: "report", data: { rowId: rowId } });
     showToast('รายงานผลสำเร็จ');
     loadDashboard();
   } catch (err) {
     showToast("เกิดข้อผิดพลาด: " + (err.message || "กรุณาลองใหม่"));
+  } finally {
+    isProcessing = false;
+    showLoading(false);
   }
 }
 
@@ -1032,7 +1178,7 @@ function showToast(text) {
   var toast = document.getElementById('toast');
   document.getElementById('toastText').innerText = text;
   toast.classList.add('show');
-  setTimeout(function() { toast.classList.remove('show'); }, 3000);
+  setTimeout(function() { toast.classList.remove('show'); }, 4000);
 }
 
 // =============================================================
