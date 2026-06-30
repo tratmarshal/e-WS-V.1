@@ -477,13 +477,13 @@
       </div>
       <div>
         <div class="banner-title">Warrant Tracker</div>
-        <div class="banner-sub">ระบบจัดการรายการดำเนินการหมายจับ (DEMO)</div>
+        <div class="banner-sub">ระบบจัดการรายการดำเนินการหมายจับ</div>
       </div>
     </div>
     <div class="banner-right">
       <div class="user-profile">
         <div class="avatar-placeholder"><i class="fas fa-user"></i></div>
-        <span>เจ้าหน้าที่ทดสอบ</span>
+        <span>เจ้าหน้าที่</span>
       </div>
       <button onclick="openFormModal()" class="btn-add">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
@@ -640,7 +640,7 @@
   </div>
 </div>
 
-<!-- ==================== CONFIRM ACTION MODAL (แทน confirm()) ==================== -->
+<!-- ==================== CONFIRM ACTION MODAL ==================== -->
 <div id="actionConfirmModal" class="modal-overlay hidden">
   <div class="modal-card" style="max-width:400px;">
     <div class="modal-body" style="text-align:center;">
@@ -665,32 +665,49 @@
 
 <script>
 // =============================================================
-// DEMO DATA
+// CONFIGURATION
 // =============================================================
-var demoItems = [
-  { rowId: "2", warrantNumber: "จ.123/2567", warrantDetail: "ลักทรัพย์", defendantName: "นายสมชาย ใจดี", endReason: "จำเลยมาศาลตามนัด", reasonDetail: "", caseStatus: "เสนอ ท่านผู้พิพากษา สมศักดิ์ รักยุติธรรม", warrantStatus: "สิ้นผลรอเพิกถอน", syncStatus: "synced" },
-  { rowId: "3", warrantNumber: "จ.456/2567", warrantDetail: "ทำร้ายร่างกาย", defendantName: "นายสมชาย ใจดี", endReason: "จับตัวจำเลยได้", reasonDetail: "", caseStatus: "รอส่งต่อสำนวน", warrantStatus: "เพิกถอน", syncStatus: "synced" },
-  { rowId: "4", warrantNumber: "ด.789/2567", warrantDetail: "ฉ้อโกง", defendantName: "นางสาววิไล สุขดี", endReason: "ถอนฟ้อง/ถอนคำร้องทุกข์", reasonDetail: "", caseStatus: "ส่งต่อสำเร็จแล้ว", warrantStatus: "เพิกถอน", syncStatus: "synced" },
-  { rowId: "5", warrantNumber: "จ.321/2567", warrantDetail: "บุกรุก", defendantName: "นายดำรงค์ กล้าหาญ", endReason: "จำเลยเสียชีวิต", reasonDetail: "", caseStatus: "เสนอ ท่านผู้พิพากษา สมศักดิ์ รักยุติธรรม", warrantStatus: "สิ้นผลรอเพิกถอน", syncStatus: "pending" }
-];
+var GAS_URL = "https://script.google.com/macros/s/AKfycbxQFqutUu9urZnhFO-OuKkIU3NYmRwhaFP8l-I9h6XiT33p8Yluv5O9so6GMHW0ZRk/exec";
 
-var masterItems = demoItems;
+var masterItems = [];
 var currentTab = 'active';
 var currentSearchedDefendant = null;
 var pendingActionCallback = null;
+var pendingDataToSave = null;
 
-var mockWarrants = {
-  "นายสมชาย ใจดี": [
-    { warrantNumber: "จ.123/2567", charge: "ลักทรัพย์", status: "ต้องการตัว", defendantName: "นายสมชาย ใจดี" },
-    { warrantNumber: "จ.456/2567", charge: "ทำร้ายร่างกาย", status: "สิ้นผลรอเพิกถอน", defendantName: "นายสมชาย ใจดี" }
-  ],
-  "นางสาววิไล สุขดี": [
-    { warrantNumber: "ด.789/2567", charge: "ฉ้อโกง", status: "ต้องการตัว", defendantName: "นางสาววิไล สุขดี" }
-  ],
-  "นายดำรงค์ กล้าหาญ": [
-    { warrantNumber: "จ.321/2567", charge: "บุกรุก", status: "ต้องการตัว", defendantName: "นายดำรงค์ กล้าหาญ" }
-  ]
-};
+// =============================================================
+// API Gateway
+// =============================================================
+async function callGas(fn, payload) {
+  try {
+    var res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ fn: fn, payload: payload || {} })
+    });
+    var json = await res.json();
+    if (json && json.success === false) {
+      throw new Error(json.error || "ระบบปฏิเสธคำขอ");
+    }
+    return json;
+  } catch (err) {
+    console.error('callGas error:', err);
+    throw err;
+  }
+}
+
+// =============================================================
+// Load Dashboard
+// =============================================================
+async function loadDashboard() {
+  try {
+    var result = await callGas("callList", {});
+    masterItems = result.data || [];
+    renderDashboard();
+  } catch (err) {
+    showToast("ไม่สามารถโหลดข้อมูล: " + (err.message || "การเชื่อมต่อล้มเหลว"));
+  }
+}
 
 // =============================================================
 // Tab Switching
@@ -711,19 +728,18 @@ function renderDashboard() {
   var emptyState = document.getElementById('emptyState');
 
   // Count by tab
-  var countActive = masterItems.filter(function(i) { return i.caseStatus.indexOf('เสนอ') === 0; }).length;
-  var countPending = masterItems.filter(function(i) { return i.caseStatus === 'รอส่งต่อสำนวน'; }).length;
+  var countActive = masterItems.filter(function(i) { return i.caseStatus === 'เสนอศาล'; }).length;
+  var countPending = masterItems.filter(function(i) { return i.caseStatus === 'รอส่งต่อสำนวน' || i.caseStatus === 'รายงานแล้ว'; }).length;
 
   document.getElementById('countActive').innerText = countActive;
   document.getElementById('countPending').innerText = countPending;
 
-  // Filter by current tab (but show ALL including completed in pending tab)
+  // Filter by current tab
   var filtered = [];
   if (currentTab === 'active') {
-    filtered = masterItems.filter(function(i) { return i.caseStatus.indexOf('เสนอ') === 0; });
+    filtered = masterItems.filter(function(i) { return i.caseStatus === 'เสนอศาล'; });
   } else {
-    // "รอส่งต่อ/รายงาน" — show both "รอส่งต่อสำนวน" and "ส่งต่อสำเร็จแล้ว"
-    filtered = masterItems.filter(function(i) { return i.caseStatus === 'รอส่งต่อสำนวน' || i.caseStatus === 'ส่งต่อสำเร็จแล้ว'; });
+    filtered = masterItems.filter(function(i) { return i.caseStatus === 'รอส่งต่อสำนวน' || i.caseStatus === 'ส่งต่อสำเร็จแล้ว' || i.caseStatus === 'รายงานแล้ว'; });
   }
 
   // If active tab has 0 items, hide entire dashboard
@@ -747,7 +763,7 @@ function renderDashboard() {
 
     // Warrant status color
     var wColor = '';
-    if (item.warrantStatus === 'สิ้นผลรอเพิกถอน') wColor = 'red';
+    if (item.warrantStatus === 'รอเพิกถอน') wColor = 'red';
     else if (item.warrantStatus === 'เพิกถอน') wColor = 'gray';
 
     // Check if done
@@ -797,9 +813,10 @@ function renderDashboard() {
 }
 
 function badgeHtml(s) {
-  if (s.indexOf('เสนอ') === 0) return '<span class="badge badge-amber">' + esc(s) + '</span>';
+  if (s === 'เสนอศาล') return '<span class="badge badge-amber">เสนอศาลแล้ว</span>';
   if (s === 'รอส่งต่อสำนวน') return '<span class="badge badge-indigo">รอส่งต่อสำนวน</span>';
   if (s === 'ส่งต่อสำเร็จแล้ว') return '<span class="badge badge-done">✓ ส่งต่อสำเร็จแล้ว</span>';
+  if (s === 'รายงานแล้ว') return '<span class="badge badge-done">รายงานแล้ว</span>';
   return '<span class="badge badge-done">' + esc(s) + '</span>';
 }
 
@@ -839,16 +856,15 @@ document.addEventListener('touchend', function(e) {
   if (indicator.classList.contains('show')) {
     indicator.innerHTML = '<span class="spinner-small"></span> กำลังรีโหลดข้อมูล...';
     setTimeout(function() {
-      renderDashboard();
+      loadDashboard();
       indicator.classList.remove('show');
       indicator.innerHTML = '<span class="spinner-small"></span> ปล่อยเพื่อรีโหลด...';
-      showToast('รีโหลดข้อมูลสำเร็จ');
-    }, 800);
+    }, 300);
   }
 }, { passive: true });
 
 // =============================================================
-// Confirm Action Modal (แทน confirm())
+// Confirm Action Modal
 // =============================================================
 function showActionConfirm(title, desc, callback) {
   document.getElementById('actionConfirmTitle').innerText = title;
@@ -880,14 +896,13 @@ function closeFormModal() {
 function openConfirmModal() { document.getElementById('confirmModal').classList.remove('hidden'); }
 function closeConfirmModal(confirmed) {
   document.getElementById('confirmModal').classList.add('hidden');
-  if (confirmed) {
-    showToast('บันทึกรายการสำเร็จ (DEMO)');
-    closeFormModal();
+  if (confirmed && pendingDataToSave) {
+    saveProcessRecord(pendingDataToSave);
   }
 }
 
 // =============================================================
-// Form Logic (Mock)
+// Form Logic
 // =============================================================
 function toggleReasonDetail() {
   var sel = document.getElementById('endReason');
@@ -896,54 +911,119 @@ function toggleReasonDetail() {
   else { container.classList.add('hidden'); document.getElementById('reasonDetail').value = ''; }
 }
 
-function searchWarrants() {
+async function searchWarrants() {
   var query = document.getElementById('searchQuery').value.trim();
-  if (!query) { showToast('กรุณากรอกชื่อจำเลย'); return; }
-  var warrants = null;
-  for (var key in mockWarrants) { if (key.toLowerCase().indexOf(query.toLowerCase()) !== -1) { warrants = mockWarrants[key]; break; } }
-  if (!warrants) { for (var k in mockWarrants) { if (k.indexOf(query) !== -1 || query.indexOf(k) !== -1) { warrants = mockWarrants[k]; break; } } }
-  if (!warrants) { alert('ไม่พบข้อมูลหมายจับของจำเลยรายนี้ (DEMO)'); return; }
-  currentSearchedDefendant = { defendantName: warrants[0].defendantName, warrants: warrants };
-  document.getElementById('searchedDefendantName').innerText = warrants[0].defendantName;
-  var listDiv = document.getElementById('warrantsCheckboxList');
-  listDiv.innerHTML = '';
-  warrants.forEach(function(w, idx) {
-    var isRevoked = w.status === 'เพิกถอน' || w.status === 'สิ้นผลรอเพิกถอน';
-    var div = document.createElement('div');
-    div.className = "checkbox-item" + (isRevoked ? " disabled" : "");
-    div.innerHTML = '<input type="checkbox" id="chk-' + idx + '" value="' + w.warrantNumber + '" data-detail="' + esc(w.charge) + '" ' + (isRevoked ? '' : 'checked') + ' ' + (isRevoked ? 'disabled' : '') + '><label for="chk-' + idx + '" style="' + (isRevoked ? 'cursor:not-allowed;' : '') + '"><span class="warrant-no"><span>' + w.warrantNumber + '</span>' + (w.status ? '<span class="warrant-status-tag">' + w.status + '</span>' : '') + '</span><span class="warrant-detail">' + esc(w.charge) + '</span></label>';
-    listDiv.appendChild(div);
-  });
-  document.getElementById('searchResultsSection').classList.remove('hidden');
-  document.getElementById('warrantForm').classList.remove('hidden');
+  if (!query) { showToast('กรุณากรอกข้อมูลค้นหาก่อน'); return; }
+
+  try {
+    var searchType = /^\d{13}$/.test(query) ? "id13" : "name";
+    var result = await callGas("searchDB", { keyword: query, searchType: searchType });
+    var warrants = result.data || [];
+
+    if (warrants.length === 0) {
+      alert("ไม่พบข้อมูลหมายจับในระบบ");
+      return;
+    }
+
+    var defendantName = warrants[0].defendantName;
+    currentSearchedDefendant = { defendantName: defendantName, warrants: warrants };
+    document.getElementById('searchedDefendantName').innerText = defendantName;
+
+    var listDiv = document.getElementById('warrantsCheckboxList');
+    listDiv.innerHTML = '';
+    warrants.forEach(function(w, idx) {
+      var isRevoked = w.status === 'เพิกถอน' || w.status === 'สิ้นผลรอเพิกถอน';
+      var div = document.createElement('div');
+      div.className = "checkbox-item" + (isRevoked ? " disabled" : "");
+      div.innerHTML = '<input type="checkbox" id="chk-' + idx + '" value="' + esc(w.warrantNumber) + '" data-detail="' + esc(w.charge) + '" ' + (isRevoked ? '' : 'checked') + ' ' + (isRevoked ? 'disabled' : '') + '><label for="chk-' + idx + '" style="' + (isRevoked ? 'cursor:not-allowed;' : '') + '"><span class="warrant-no"><span>' + esc(w.warrantNumber) + '</span>' + (w.status ? '<span class="warrant-status-tag">' + esc(w.status) + '</span>' : '') + '</span><span class="warrant-detail">' + esc(w.charge) + '</span></label>';
+      listDiv.appendChild(div);
+    });
+
+    document.getElementById('searchResultsSection').classList.remove('hidden');
+    document.getElementById('warrantForm').classList.remove('hidden');
+  } catch (err) {
+    showToast("การค้นหาล้มเหลว: " + (err.message || "กรุณาลองใหม่"));
+  }
 }
 
 function handleFormSubmit(e) {
   e.preventDefault();
   var selected = [];
-  if (currentSearchedDefendant) { currentSearchedDefendant.warrants.forEach(function(w, idx) { var chk = document.getElementById('chk-' + idx); if (chk && chk.checked) selected.push({ warrantNo: w.warrantNumber, warrantDetail: w.charge }); }); }
+  if (currentSearchedDefendant) {
+    currentSearchedDefendant.warrants.forEach(function(w, idx) {
+      var chk = document.getElementById('chk-' + idx);
+      if (chk && chk.checked) selected.push({ warrantNo: w.warrantNumber, warrantDetail: w.charge });
+    });
+  }
   if (selected.length === 0) { alert('กรุณาเลือกหมายจับอย่างน้อย 1 รายการ'); return; }
   var reason = document.getElementById('endReason').value;
   var proposed = document.getElementById('proposedTo').value;
   if (!reason) { alert('กรุณาเลือกเหตุ'); return; }
   if (!proposed) { alert('กรุณาเลือกผู้พิพากษา'); return; }
-  var caseStatus = 'เสนอ ' + proposed;
-  document.getElementById('confirmDefendant').innerText = currentSearchedDefendant.defendantName;
+  var caseStatus = 'เสนอศาล';
+
+  pendingDataToSave = {
+    defendantName: currentSearchedDefendant.defendantName,
+    selectedWarrants: selected,
+    endReason: reason,
+    reasonDetail: document.getElementById('reasonDetail').value,
+    proposedTo: proposed
+  };
+
+  document.getElementById('confirmDefendant').innerText = pendingDataToSave.defendantName;
   document.getElementById('confirmCaseStatus').innerText = caseStatus;
   document.getElementById('confirmReason').innerText = reason;
-  document.getElementById('confirmReasonDetail').innerText = document.getElementById('reasonDetail').value ? '(' + document.getElementById('reasonDetail').value + ')' : '';
+  document.getElementById('confirmReasonDetail').innerText = pendingDataToSave.reasonDetail ? '(' + pendingDataToSave.reasonDetail + ')' : '';
   var list = document.getElementById('confirmWarrantsList');
   list.innerHTML = '';
-  selected.forEach(function(w) { var b = document.createElement('div'); b.className = "warrant-badge-sm"; b.innerHTML = '<span class="no">' + w.warrantNo + '</span><span class="det">' + esc(w.warrantDetail) + '</span>'; list.appendChild(b); });
+  selected.forEach(function(w) { var b = document.createElement('div'); b.className = "warrant-badge-sm"; b.innerHTML = '<span class="no">' + esc(w.warrantNo) + '</span><span class="det">' + esc(w.warrantDetail) + '</span>'; list.appendChild(b); });
   openConfirmModal();
 }
 
+async function saveProcessRecord(data) {
+  try {
+    var result = await callGas("saveDB", { action: "addProcess", data: data });
+    showToast('บันทึกรายการ ' + (result.count || data.selectedWarrants.length) + ' รายการสำเร็จ');
+    pendingDataToSave = null;
+    closeFormModal();
+    setTimeout(function() { loadDashboard(); }, 200);
+  } catch (err) {
+    showToast("บันทึกล้มเหลว: " + (err.message || "กรุณาลองใหม่"));
+  }
+}
+
 // =============================================================
-// Action Buttons (Mock)
+// Action Buttons
 // =============================================================
-function actionRevoke(rowId) { showToast('อัปเดตสถานะเป็น เพิกถอน สำเร็จ (DEMO)'); }
-function actionForward(rowId) { showToast('ส่งต่อสำนวนสำเร็จ (DEMO)'); }
-function actionReport(rowId) { showToast('รายงานผลสำเร็จ (DEMO)'); }
+async function actionRevoke(rowId) {
+  try {
+    await callGas("saveDB", { action: "markRevoked", data: { rowId: rowId } });
+    showToast('อัปเดตสถานะเป็น เพิกถอน สำเร็จ');
+    loadDashboard();
+  } catch (err) {
+    showToast("เกิดข้อผิดพลาด: " + (err.message || "กรุณาลองใหม่"));
+  }
+}
+
+async function actionForward(rowId) {
+  try {
+    await callGas("saveDB", { action: "markForwarded", data: { rowId: rowId } });
+    showToast('ส่งต่อสำนวนสำเร็จ');
+    loadDashboard();
+  } catch (err) {
+    showToast("เกิดข้อผิดพลาด: " + (err.message || "กรุณาลองใหม่"));
+  }
+}
+
+async function actionReport(rowId) {
+  try {
+    await callGas("saveDB", { action: "report", data: { rowId: rowId } });
+    showToast('รายงานผลสำเร็จ');
+    loadDashboard();
+  } catch (err) {
+    showToast("เกิดข้อผิดพลาด: " + (err.message || "กรุณาลองใหม่"));
+  }
+}
 
 // =============================================================
 // Toast
@@ -958,7 +1038,7 @@ function showToast(text) {
 // =============================================================
 // Init
 // =============================================================
-renderDashboard();
+loadDashboard();
 </script>
 </body>
 </html>
